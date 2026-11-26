@@ -137,26 +137,36 @@ function Login() {
       const cb = getCardBounds(c, cardEl)
 
       dataRef.current.forEach((d, i) => {
-        d.x += d.dx
-        d.y += d.dy
+        let nx = d.x + d.dx
+        let ny = d.y + d.dy
         d.r += d.dr
 
-        if (d.x <= 0) { d.x = 0; d.dx = Math.abs(d.dx) }
-        if (d.x >= w - d.size) { d.x = w - d.size; d.dx = -Math.abs(d.dx) }
-        if (d.y <= 0) { d.y = 0; d.dy = Math.abs(d.dy) }
-        if (d.y >= h - d.size) { d.y = h - d.size; d.dy = -Math.abs(d.dy) }
+        if (nx <= 0) { nx = 0; d.dx = Math.abs(d.dx) }
+        if (nx >= w - d.size) { nx = w - d.size; d.dx = -Math.abs(d.dx) }
+        if (ny <= 0) { ny = 0; d.dy = Math.abs(d.dy) }
+        if (ny >= h - d.size) { ny = h - d.size; d.dy = -Math.abs(d.dy) }
 
-        if (d.x + d.size > cb.left && d.x < cb.right && d.y + d.size > cb.top && d.y < cb.bottom) {
-          const oL = d.x + d.size - cb.left
-          const oR = cb.right - d.x
-          const oT = d.y + d.size - cb.top
-          const oB = cb.bottom - d.y
-          const min = Math.min(oL, oR, oT, oB)
-          if (min === oL) { d.x = cb.left - d.size; d.dx = -Math.abs(d.dx) }
-          else if (min === oR) { d.x = cb.right; d.dx = Math.abs(d.dx) }
-          else if (min === oT) { d.y = cb.top - d.size; d.dy = -Math.abs(d.dy) }
-          else { d.y = cb.bottom; d.dy = Math.abs(d.dy) }
+        if (nx + d.size > cb.left && nx < cb.right && ny + d.size > cb.top && ny < cb.bottom) {
+          const inX = d.x + d.size > cb.left && d.x < cb.right
+          const inY = d.y + d.size > cb.top && d.y < cb.bottom
+          if (!inX) {
+            d.dx = -d.dx
+            nx = d.x + d.dx
+          }
+          if (!inY) {
+            d.dy = -d.dy
+            ny = d.y + d.dy
+          }
+          if (inX && inY) {
+            d.dx = -d.dx
+            d.dy = -d.dy
+            nx = d.x + d.dx
+            ny = d.y + d.dy
+          }
         }
+
+        d.x = nx
+        d.y = ny
 
         if (iconRefs.current[i])
           iconRefs.current[i].style.transform = 'translate(' + d.x + 'px,' + d.y + 'px) rotate(' + d.r + 'deg)'
