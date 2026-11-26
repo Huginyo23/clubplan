@@ -38,7 +38,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/", "/login", "/register", "/equipo/**", "/convocatoria/**").permitAll()
-                .requestMatchers("/index.html", "/assets/**", "/*.js", "/*.css", "/*.ico", "/*.svg").permitAll()
+                .requestMatchers("/index.html", "/assets/**", "/balls/**", "/*.js", "/*.css", "/*.ico", "/*.svg").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
