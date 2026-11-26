@@ -1,0 +1,76 @@
+const API = '/api'
+
+function getToken() {
+  return localStorage.getItem('token')
+}
+
+export function setToken(token) {
+  localStorage.setItem('token', token)
+}
+
+export function removeToken() {
+  localStorage.removeItem('token')
+}
+
+export function getUser() {
+  const data = localStorage.getItem('usuario')
+  return data ? JSON.parse(data) : null
+}
+
+export function setUser(usuario) {
+  localStorage.setItem('usuario', JSON.stringify(usuario))
+}
+
+async function request(url, options = {}) {
+  const token = getToken()
+  const headers = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(API + url, { ...options, headers })
+  if (res.status === 401) {
+    removeToken()
+    window.location.href = '/login'
+    return
+  }
+  return res.json()
+}
+
+export function login(email, password) {
+  return request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) })
+}
+
+export function register(nombre, email, password, rol) {
+  return request('/auth/register', { method: 'POST', body: JSON.stringify({ nombre, email, password, rol }) })
+}
+
+export function getEquipos() {
+  return request('/equipos')
+}
+
+export function crearEquipo(nombre) {
+  return request('/equipos', { method: 'POST', body: JSON.stringify({ nombre }) })
+}
+
+export function getEquipo(id) {
+  return request('/equipos/' + id)
+}
+
+export function addJugador(equipoId, email) {
+  return request('/equipos/' + equipoId + '/jugadores', { method: 'POST', body: JSON.stringify({ email }) })
+}
+
+export function getConvocatorias(equipoId) {
+  return request('/equipos/' + equipoId + '/convocatorias')
+}
+
+export function crearConvocatoria(equipoId, data) {
+  return request('/equipos/' + equipoId + '/convocatorias', { method: 'POST', body: JSON.stringify(data) })
+}
+
+export function getAsistencia(convocatoriaId) {
+  return request('/convocatorias/' + convocatoriaId + '/asistencia')
+}
+
+export function confirmarAsistencia(convocatoriaId, estado) {
+  return request('/convocatorias/' + convocatoriaId + '/asistencia', { method: 'PUT', body: JSON.stringify({ estado }) })
+}
