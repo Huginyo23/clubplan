@@ -282,7 +282,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--oscuro) 0%, var(--oscuro2) 50%, #16213E 100%);
+  background: linear-gradient(135deg, rgba(15,14,23,0.85) 0%, rgba(26,26,46,0.85) 50%, rgba(22,33,62,0.85) 100%), url('/balls/celebration.png') center/cover no-repeat;
   padding: 20px;
   position: relative;
   overflow: hidden;
