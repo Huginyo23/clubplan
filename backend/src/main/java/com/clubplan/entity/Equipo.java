@@ -2,7 +2,9 @@ package com.clubplan.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.util.HashSet;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(exclude = "jugadores")
+@ToString(exclude = "jugadores")
 public class Equipo {
 
     @Id

@@ -1,5 +1,7 @@
 # Backend
 backend/target/
+backend/*.mv.db
+backend/*.trace.db
 *.class
 
 # Frontend
