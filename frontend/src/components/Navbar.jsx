@@ -14,9 +14,9 @@ function Navbar() {
   return (
     <nav className="navbar">
       <h1 style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>ClubPlan</h1>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <span>{user?.nombre} ({user?.rol})</span>
-        <button onClick={logout}>Salir</button>
+      <div className="navbar-right">
+        <span className="navbar-user"><strong>{user?.nombre}</strong> · {user?.rol === 'ENTRENADOR' ? 'Entrenador' : 'Jugador'}</span>
+        <button onClick={logout}>Cerrar sesion</button>
       </div>
     </nav>
   )

@@ -24,37 +24,48 @@ function Dashboard() {
   return (
     <div className="container">
       <div className="flex-between">
-        <h2>Mis equipos</h2>
+        <div className="page-header">
+          <h2>Mis equipos</h2>
+          <p>{equipos.length} equipo{equipos.length !== 1 ? 's' : ''}</p>
+        </div>
         {user?.rol === 'ENTRENADOR' && (
           <button className="btn btn-primary" onClick={() => setCreando(!creando)}>
-            {creando ? 'Cancelar' : 'Nuevo equipo'}
+            {creando ? 'Cancelar' : '+ Nuevo equipo'}
           </button>
         )}
       </div>
 
       {creando && (
-        <form onSubmit={handleCrear} className="card" style={{ display: 'flex', gap: '12px' }}>
-          <input
-            className="form-group"
-            placeholder="Nombre del equipo"
-            value={nombre}
-            onChange={e => setNombre(e.target.value)}
-            required
-            style={{ flex: 1, padding: '10px', border: '1px solid var(--borde)', borderRadius: '6px' }}
-          />
-          <button type="submit" className="btn btn-primary">Crear</button>
+        <form onSubmit={handleCrear} className="card" style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.85rem' }}>Nombre del equipo</label>
+            <input
+              placeholder="Ej: Juvenil A"
+              value={nombre}
+              onChange={e => setNombre(e.target.value)}
+              required
+              style={{ width: '100%', padding: '12px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.95rem', fontFamily: 'inherit' }}
+            />
+          </div>
+          <button type="submit" className="btn btn-primary" style={{ height: '46px' }}>Crear</button>
         </form>
       )}
 
       <div className="grid">
         {equipos.map(equipo => (
-          <div key={equipo.id} className="card" style={{ cursor: 'pointer' }} onClick={() => navigate('/equipo/' + equipo.id)}>
+          <div key={equipo.id} className="card card-clickable" onClick={() => navigate('/equipo/' + equipo.id)}>
+            <div className="card-icon card-icon-purple">&#9917;</div>
             <h3>{equipo.nombre}</h3>
             <p>Entrenador: {equipo.entrenador?.nombre || 'Tu'}</p>
           </div>
         ))}
-        {equipos.length === 0 && <p style={{ color: 'var(--texto-suave)' }}>No tienes equipos todavia</p>}
       </div>
+      {equipos.length === 0 && (
+        <div className="empty-state">
+          <div className="empty-icon">&#9917;</div>
+          <p>No tienes equipos todavia</p>
+        </div>
+      )}
     </div>
   )
 }

@@ -23,22 +23,24 @@ function Register() {
   }
 
   return (
-    <div className="container" style={{ maxWidth: '400px', marginTop: '80px' }}>
-      <div className="card">
-        <h2 style={{ marginBottom: '20px' }}>Registro</h2>
+    <div className="login-bg">
+      <div className="login-card">
+        <div className="login-logo">ClubPlan</div>
+        <h2>Crear cuenta</h2>
+        <p className="login-subtitle">Unete a tu equipo</p>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Nombre</label>
-            <input value={nombre} onChange={e => setNombre(e.target.value)} required />
+            <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Tu nombre" required />
           </div>
           <div className="form-group">
             <label>Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" required />
           </div>
           <div className="form-group">
-            <label>Contraseña</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+            <label>Contrasena</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Tu contrasena" required />
           </div>
           <div className="form-group">
             <label>Rol</label>
@@ -47,10 +49,10 @@ function Register() {
               <option value="JUGADOR">Jugador</option>
             </select>
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Registrarme</button>
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px' }}>Registrarme</button>
         </form>
-        <p style={{ marginTop: '16px', textAlign: 'center', fontSize: '0.9rem' }}>
-          Ya tienes cuenta? <Link to="/login">Inicia sesion</Link>
+        <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--texto-suave)' }}>
+          Ya tienes cuenta? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>Inicia sesion</Link>
         </p>
       </div>
     </div>
