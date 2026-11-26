@@ -5,13 +5,13 @@ import { login, setToken, setUser } from '../api'
 const BALL_IMAGES = ['/balls/soccer.png', '/balls/basketball.png', '/balls/baseball.png', '/balls/tennis.png', '/balls/volleyball.png', '/balls/football.png', '/balls/hockey.png']
 
 const BALLS = [
-  { size: 90, speed: 2.5, rot: 1.2 },
-  { size: 100, speed: 3, rot: -1 },
-  { size: 80, speed: 2.8, rot: 1.4 },
-  { size: 70, speed: 3.5, rot: -1.6 },
-  { size: 95, speed: 2.2, rot: 0.9 },
-  { size: 75, speed: 3.2, rot: -1.3 },
-  { size: 65, speed: 3.8, rot: 1.5 },
+  { size: 120, speed: 2.5, rot: 1.2 },
+  { size: 140, speed: 3, rot: -1 },
+  { size: 110, speed: 2.8, rot: 1.4 },
+  { size: 100, speed: 3.5, rot: -1.6 },
+  { size: 130, speed: 2.2, rot: 0.9 },
+  { size: 105, speed: 3.2, rot: -1.3 },
+  { size: 95, speed: 3.8, rot: 1.5 },
 ]
 
 function Login() {

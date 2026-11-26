@@ -295,7 +295,9 @@ body {
   pointer-events: none;
   will-change: transform;
   z-index: 0;
-  opacity: 0.45;
+  opacity: 0.5;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .login-card {
