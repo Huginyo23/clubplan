@@ -2,6 +2,8 @@ import { useState, useLayoutEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login, setToken, setUser } from '../api'
 
+const BALL_IMAGES = ['/balls/soccer.png', '/balls/basketball.png', '/balls/baseball.png', '/balls/tennis.png', '/balls/volleyball.png', '/balls/football.png', '/balls/hockey.png']
+
 const BALLS = [
   { size: 90, speed: 2.5, rot: 1.2 },
   { size: 100, speed: 3, rot: -1 },
@@ -11,68 +13,6 @@ const BALLS = [
   { size: 75, speed: 3.2, rot: -1.3 },
   { size: 65, speed: 3.8, rot: 1.5 },
 ]
-
-function BallSVG({ index, size }) {
-  const s = size
-  if (index === 0) return (
-    <svg width={s} height={s} viewBox="0 0 50 50">
-      <circle cx="25" cy="25" r="24" fill="#fff"/>
-      <path d="M25,4 L29,14 L25,18 L21,14 Z" fill="#333"/>
-      <path d="M9,19 L19,14 L19,23 L11,27 Z" fill="#333"/>
-      <path d="M41,19 L31,14 L31,23 L39,27 Z" fill="#333"/>
-      <path d="M15,39 L20,28 L25,32 L22,43 Z" fill="#333"/>
-      <path d="M35,39 L30,28 L25,32 L28,43 Z" fill="#333"/>
-    </svg>
-  )
-  if (index === 1) return (
-    <svg width={s} height={s} viewBox="0 0 50 50">
-      <circle cx="25" cy="25" r="24" fill="#FF8F00"/>
-      <line x1="1" y1="25" x2="49" y2="25" stroke="#BF360C" strokeWidth="2"/>
-      <line x1="25" y1="1" x2="25" y2="49" stroke="#BF360C" strokeWidth="2"/>
-      <path d="M7,8 Q25,22 43,8" fill="none" stroke="#BF360C" strokeWidth="2"/>
-      <path d="M7,42 Q25,28 43,42" fill="none" stroke="#BF360C" strokeWidth="2"/>
-    </svg>
-  )
-  if (index === 2) return (
-    <svg width={s} height={s} viewBox="0 0 50 50">
-      <circle cx="25" cy="25" r="24" fill="#FFFDE7" stroke="#ccc" strokeWidth="1"/>
-      <path d="M5,16 Q25,32 45,16" fill="none" stroke="#1565C0" strokeWidth="2"/>
-      <path d="M5,34 Q25,18 45,34" fill="none" stroke="#C62828" strokeWidth="2"/>
-      <path d="M25,1 Q28,25 25,49" fill="none" stroke="#F9A825" strokeWidth="2"/>
-    </svg>
-  )
-  if (index === 3) return (
-    <svg width={s} height={s} viewBox="0 0 50 50">
-      <circle cx="25" cy="25" r="24" fill="#C6FF00"/>
-      <path d="M12,4 Q4,25 12,46" fill="none" stroke="#fff" strokeWidth="3.5"/>
-      <path d="M38,4 Q46,25 38,46" fill="none" stroke="#fff" strokeWidth="3.5"/>
-    </svg>
-  )
-  if (index === 4) return (
-    <svg width={s} height={s} viewBox="0 0 60 40">
-      <ellipse cx="30" cy="20" rx="29" ry="19" fill="#8D6E63"/>
-      <line x1="12" y1="20" x2="48" y2="20" stroke="#5D4037" strokeWidth="2"/>
-      <line x1="30" y1="4" x2="30" y2="36" stroke="#5D4037" strokeWidth="1.5"/>
-      <line x1="26" y1="5" x2="26" y2="35" stroke="#5D4037" strokeWidth="0.8"/>
-      <line x1="34" y1="5" x2="34" y2="35" stroke="#5D4037" strokeWidth="0.8"/>
-    </svg>
-  )
-  if (index === 5) return (
-    <svg width={s} height={s} viewBox="0 0 50 50">
-      <circle cx="25" cy="25" r="24" fill="#FAFAFA" stroke="#ccc" strokeWidth="1"/>
-      <path d="M14,4 Q4,25 14,46" fill="none" stroke="#E53935" strokeWidth="2.5"/>
-      <path d="M36,4 Q46,25 36,46" fill="none" stroke="#E53935" strokeWidth="2.5"/>
-    </svg>
-  )
-  return (
-    <svg width={s} height={s} viewBox="0 0 50 50">
-      <circle cx="25" cy="25" r="24" fill="#fff" stroke="#aaa" strokeWidth="1"/>
-      <circle cx="25" cy="25" r="4" fill="#E53935"/>
-      <path d="M5,25 Q25,15 45,25" fill="none" stroke="#1565C0" strokeWidth="2"/>
-      <path d="M5,25 Q25,35 45,25" fill="none" stroke="#E53935" strokeWidth="2"/>
-    </svg>
-  )
-}
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -195,7 +135,7 @@ function Login() {
     <div className="login-bg" ref={containerRef}>
       {BALLS.map((b, i) => (
         <div key={i} ref={el => iconRefs.current[i] = el} className="bouncing-icon">
-          <BallSVG index={i} size={b.size} />
+          <img src={BALL_IMAGES[i]} alt="" width={b.size} height={b.size} draggable="false" />
         </div>
       ))}
 
