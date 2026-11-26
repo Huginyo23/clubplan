@@ -284,6 +284,28 @@ body {
   justify-content: center;
   background: linear-gradient(135deg, var(--oscuro) 0%, var(--oscuro2) 50%, #16213E 100%);
   padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-illust {
+  position: absolute;
+  width: 300px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+.login-illust-left {
+  left: 2%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.login-illust-right {
+  right: 2%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+@media (max-width: 1200px) {
+  .login-illust { display: none; }
 }
 
 .login-card {
