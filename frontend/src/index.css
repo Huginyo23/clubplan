@@ -293,7 +293,7 @@ body {
   pointer-events: none;
   will-change: transform;
   z-index: 0;
-  opacity: 0.25;
+  opacity: 0.45;
 }
 
 .login-card {

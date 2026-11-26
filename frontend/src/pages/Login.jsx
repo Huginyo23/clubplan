@@ -3,13 +3,13 @@ import { useNavigate, Link } from 'react-router-dom'
 import { login, setToken, setUser } from '../api'
 
 const BALLS = [
-  { size: 55, speed: 0.8, rot: 0.6 },
-  { size: 60, speed: 1, rot: -0.5 },
-  { size: 48, speed: 1.2, rot: 0.7 },
-  { size: 42, speed: 1.4, rot: -0.9 },
-  { size: 54, speed: 0.9, rot: 0.4 },
-  { size: 46, speed: 1.1, rot: -0.7 },
-  { size: 38, speed: 1.3, rot: 0.8 },
+  { size: 90, speed: 2.5, rot: 1.2 },
+  { size: 100, speed: 3, rot: -1 },
+  { size: 80, speed: 2.8, rot: 1.4 },
+  { size: 70, speed: 3.5, rot: -1.6 },
+  { size: 95, speed: 2.2, rot: 0.9 },
+  { size: 75, speed: 3.2, rot: -1.3 },
+  { size: 65, speed: 3.8, rot: 1.5 },
 ]
 
 function BallSVG({ index, size }) {
@@ -83,35 +83,25 @@ function Login() {
   const cardRef = useRef(null)
   const iconRefs = useRef([])
   const dataRef = useRef([])
-  const cardBounds = useRef(null)
 
-  function calcCardBounds() {
-    const c = containerRef.current
-    const el = cardRef.current
-    if (!c || !el) return
+  function getCardBounds(c, cardEl) {
     const cR = c.getBoundingClientRect()
-    const eR = el.getBoundingClientRect()
-    cardBounds.current = {
-      left: eR.left - cR.left - 20,
-      top: eR.top - cR.top - 20,
-      right: eR.right - cR.left + 20,
-      bottom: eR.bottom - cR.top + 20,
+    const eR = cardEl.getBoundingClientRect()
+    return {
+      left: eR.left - cR.left - 30,
+      top: eR.top - cR.top - 30,
+      right: eR.right - cR.left + 30,
+      bottom: eR.bottom - cR.top + 30,
     }
-  }
-
-  function overlapsCard(x, y, size) {
-    const cb = cardBounds.current
-    if (!cb) return false
-    return x + size > cb.left && x < cb.right && y + size > cb.top && y < cb.bottom
   }
 
   useLayoutEffect(() => {
     const c = containerRef.current
-    if (!c) return
+    const cardEl = cardRef.current
+    if (!c || !cardEl) return
     const w = c.clientWidth
     const h = c.clientHeight
-
-    calcCardBounds()
+    const cb = getCardBounds(c, cardEl)
 
     dataRef.current = BALLS.map((b, i) => {
       let x, y, tries = 0
@@ -119,7 +109,7 @@ function Login() {
         x = Math.random() * (w - b.size)
         y = Math.random() * (h - b.size)
         tries++
-      } while (tries < 100 && overlapsCard(x, y, b.size))
+      } while (tries < 100 && x + b.size > cb.left && x < cb.right && y + b.size > cb.top && y < cb.bottom)
 
       const angle = (Math.PI * 2 / BALLS.length) * i + Math.random() * 0.5
       return {
@@ -137,37 +127,35 @@ function Login() {
         iconRefs.current[i].style.transform = 'translate(' + d.x + 'px,' + d.y + 'px) rotate(' + d.r + 'deg)'
     })
 
-    function onResize() { calcCardBounds() }
-    window.addEventListener('resize', onResize)
-
     let frameId
     function tick() {
       const c = containerRef.current
-      if (!c) return
+      const cardEl = cardRef.current
+      if (!c || !cardEl) return
       const w = c.clientWidth
       const h = c.clientHeight
-      const cb = cardBounds.current
+      const cb = getCardBounds(c, cardEl)
 
       dataRef.current.forEach((d, i) => {
         d.x += d.dx
         d.y += d.dy
         d.r += d.dr
 
-        if (d.x <= 0) { d.x = 0; d.dx = Math.abs(d.dx); }
-        if (d.x >= w - d.size) { d.x = w - d.size; d.dx = -Math.abs(d.dx); }
-        if (d.y <= 0) { d.y = 0; d.dy = Math.abs(d.dy); }
-        if (d.y >= h - d.size) { d.y = h - d.size; d.dy = -Math.abs(d.dy); }
+        if (d.x <= 0) { d.x = 0; d.dx = Math.abs(d.dx) }
+        if (d.x >= w - d.size) { d.x = w - d.size; d.dx = -Math.abs(d.dx) }
+        if (d.y <= 0) { d.y = 0; d.dy = Math.abs(d.dy) }
+        if (d.y >= h - d.size) { d.y = h - d.size; d.dy = -Math.abs(d.dy) }
 
-        if (cb && d.x + d.size > cb.left && d.x < cb.right && d.y + d.size > cb.top && d.y < cb.bottom) {
+        if (d.x + d.size > cb.left && d.x < cb.right && d.y + d.size > cb.top && d.y < cb.bottom) {
           const oL = d.x + d.size - cb.left
           const oR = cb.right - d.x
           const oT = d.y + d.size - cb.top
           const oB = cb.bottom - d.y
           const min = Math.min(oL, oR, oT, oB)
-          if (min === oL) { d.x = cb.left - d.size; d.dx = -Math.abs(d.dx); }
-          else if (min === oR) { d.x = cb.right; d.dx = Math.abs(d.dx); }
-          else if (min === oT) { d.y = cb.top - d.size; d.dy = -Math.abs(d.dy); }
-          else { d.y = cb.bottom; d.dy = Math.abs(d.dy); }
+          if (min === oL) { d.x = cb.left - d.size; d.dx = -Math.abs(d.dx) }
+          else if (min === oR) { d.x = cb.right; d.dx = Math.abs(d.dx) }
+          else if (min === oT) { d.y = cb.top - d.size; d.dy = -Math.abs(d.dy) }
+          else { d.y = cb.bottom; d.dy = Math.abs(d.dy) }
         }
 
         if (iconRefs.current[i])
@@ -178,10 +166,7 @@ function Login() {
     }
 
     frameId = requestAnimationFrame(tick)
-    return () => {
-      cancelAnimationFrame(frameId)
-      window.removeEventListener('resize', onResize)
-    }
+    return () => cancelAnimationFrame(frameId)
   }, [])
 
   async function handleSubmit(e) {
