@@ -140,7 +140,7 @@ function Login() {
 
       <div className="login-card" ref={cardRef}>
         <div className="login-logo">ClubPlan</div>
-        <h2>Iniciar sesion</h2>
+        <h2>Iniciar sesión</h2>
         <p className="login-subtitle">Gestiona tus equipos y convocatorias</p>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
@@ -149,13 +149,13 @@ function Login() {
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" required />
           </div>
           <div className="form-group">
-            <label>Contrasena</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Tu contrasena" required />
+            <label>Contraseña</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Tu contraseña" required />
           </div>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px' }}>Entrar</button>
         </form>
         <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--texto-suave)' }}>
-          No tienes cuenta? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>Registrate</Link>
+          ¿No tienes cuenta? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>Regístrate</Link>
         </p>
       </div>
     </div>
