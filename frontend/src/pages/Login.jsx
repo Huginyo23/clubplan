@@ -2,7 +2,7 @@ import { useState, useLayoutEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login, setToken, setUser } from '../api'
 
-const BALL_IMAGES = ['/balls/soccer.png', '/balls/basketball.png', '/balls/baseball.png', '/balls/tennis.png', '/balls/volleyball.png', '/balls/football.png', '/balls/hockey.png']
+const BALL_IMAGES = ['/balls/bowling.png', '/balls/basketball.png', '/balls/billiard.png', '/balls/tennis.png', '/balls/badminton.png', '/balls/football.png', '/balls/hockey.png']
 
 const BALLS = [
   { size: 120, speed: 2.5, rot: 1.2 },
