@@ -288,44 +288,12 @@ body {
   overflow: hidden;
 }
 
-@keyframes flotar {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-18px) rotate(2deg); }
-}
-@keyframes flotar2 {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-14px) rotate(-2deg); }
-}
-@keyframes flotar3 {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(1.5deg); }
-}
-
-.login-illust {
+.bouncing-icon {
   position: absolute;
-  width: 420px;
   pointer-events: none;
-  opacity: 0.75;
-}
-.login-illust-left {
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.login-illust-right {
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.jug-1 { animation: flotar 3s ease-in-out infinite; }
-.jug-2 { animation: flotar2 3.5s ease-in-out 0.5s infinite; }
-.jug-3 { animation: flotar3 2.8s ease-in-out 1s infinite; }
-.jug-4 { animation: flotar 3.2s ease-in-out 0.3s infinite; }
-.jug-5 { animation: flotar2 3.6s ease-in-out 0.8s infinite; }
-.jug-6 { animation: flotar3 3s ease-in-out 1.2s infinite; }
-
-@media (max-width: 1200px) {
-  .login-illust { display: none; }
+  will-change: transform;
+  z-index: 0;
+  opacity: 0.25;
 }
 
 .login-card {
@@ -334,6 +302,8 @@ body {
   padding: 40px;
   width: 100%;
   max-width: 420px;
+  position: relative;
+  z-index: 1;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
 }
 
