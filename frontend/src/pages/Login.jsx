@@ -17,6 +17,9 @@ function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [showPass, setShowPass] = useState(false)
+  const [shake, setShake] = useState(false)
   const navigate = useNavigate()
   const containerRef = useRef(null)
   const cardRef = useRef(null)
@@ -120,9 +123,14 @@ function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    setLoading(true)
+    setError('')
     const data = await login(email, password)
+    setLoading(false)
     if (data.error) {
       setError(data.error)
+      setShake(true)
+      setTimeout(() => setShake(false), 500)
     } else {
       setToken(data.token)
       setUser(data.usuario)
@@ -138,7 +146,7 @@ function Login() {
         </div>
       ))}
 
-      <div className="login-card" ref={cardRef}>
+      <div className={'login-card' + (shake ? ' shake' : '')} ref={cardRef}>
         <div className="login-logo">ClubPlan</div>
         <h2>Iniciar sesión</h2>
         <p className="login-subtitle">Gestiona tus equipos y convocatorias</p>
@@ -150,9 +158,16 @@ function Login() {
           </div>
           <div className="form-group">
             <label>Contraseña</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Tu contraseña" required />
+            <div style={{ position: 'relative' }}>
+              <input type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Tu contraseña" required />
+              <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--texto-suave)', fontSize: '0.85rem', fontWeight: '500' }}>
+                {showPass ? 'Ocultar' : 'Ver'}
+              </button>
+            </div>
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px' }}>Entrar</button>
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px' }} disabled={loading}>
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
         </form>
         <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--texto-suave)' }}>
           ¿No tienes cuenta? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>Regístrate</Link>
