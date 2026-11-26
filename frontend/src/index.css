@@ -315,8 +315,8 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.shake {
-  animation: shake 0.5s ease;
+.login-card.shake {
+  animation: shake 0.5s ease !important;
 }
 
 @keyframes shake {
