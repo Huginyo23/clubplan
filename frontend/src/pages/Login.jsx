@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useLayoutEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login, setToken, setUser } from '../api'
 
@@ -14,7 +14,6 @@ const BALLS = [
 
 function BallSVG({ index, size }) {
   const s = size
-  const h = s / 2
   if (index === 0) return (
     <svg width={s} height={s} viewBox="0 0 50 50">
       <circle cx="25" cy="25" r="24" fill="#fff"/>
@@ -81,20 +80,50 @@ function Login() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const containerRef = useRef(null)
+  const cardRef = useRef(null)
   const iconRefs = useRef([])
   const dataRef = useRef([])
+  const cardBounds = useRef(null)
 
-  useEffect(() => {
+  function calcCardBounds() {
+    const c = containerRef.current
+    const el = cardRef.current
+    if (!c || !el) return
+    const cR = c.getBoundingClientRect()
+    const eR = el.getBoundingClientRect()
+    cardBounds.current = {
+      left: eR.left - cR.left - 20,
+      top: eR.top - cR.top - 20,
+      right: eR.right - cR.left + 20,
+      bottom: eR.bottom - cR.top + 20,
+    }
+  }
+
+  function overlapsCard(x, y, size) {
+    const cb = cardBounds.current
+    if (!cb) return false
+    return x + size > cb.left && x < cb.right && y + size > cb.top && y < cb.bottom
+  }
+
+  useLayoutEffect(() => {
     const c = containerRef.current
     if (!c) return
     const w = c.clientWidth
     const h = c.clientHeight
 
+    calcCardBounds()
+
     dataRef.current = BALLS.map((b, i) => {
+      let x, y, tries = 0
+      do {
+        x = Math.random() * (w - b.size)
+        y = Math.random() * (h - b.size)
+        tries++
+      } while (tries < 100 && overlapsCard(x, y, b.size))
+
       const angle = (Math.PI * 2 / BALLS.length) * i + Math.random() * 0.5
       return {
-        x: 60 + Math.random() * (w - b.size - 120),
-        y: 60 + Math.random() * (h - b.size - 120),
+        x, y,
         dx: Math.cos(angle) * b.speed,
         dy: Math.sin(angle) * b.speed,
         r: Math.random() * 360,
@@ -103,12 +132,21 @@ function Login() {
       }
     })
 
-    let id
+    dataRef.current.forEach((d, i) => {
+      if (iconRefs.current[i])
+        iconRefs.current[i].style.transform = 'translate(' + d.x + 'px,' + d.y + 'px) rotate(' + d.r + 'deg)'
+    })
+
+    function onResize() { calcCardBounds() }
+    window.addEventListener('resize', onResize)
+
+    let frameId
     function tick() {
       const c = containerRef.current
       if (!c) return
       const w = c.clientWidth
       const h = c.clientHeight
+      const cb = cardBounds.current
 
       dataRef.current.forEach((d, i) => {
         d.x += d.dx
@@ -120,15 +158,30 @@ function Login() {
         if (d.y <= 0) { d.y = 0; d.dy = Math.abs(d.dy); }
         if (d.y >= h - d.size) { d.y = h - d.size; d.dy = -Math.abs(d.dy); }
 
-        const el = iconRefs.current[i]
-        if (el) el.style.transform = 'translate(' + d.x + 'px,' + d.y + 'px) rotate(' + d.r + 'deg)'
+        if (cb && d.x + d.size > cb.left && d.x < cb.right && d.y + d.size > cb.top && d.y < cb.bottom) {
+          const oL = d.x + d.size - cb.left
+          const oR = cb.right - d.x
+          const oT = d.y + d.size - cb.top
+          const oB = cb.bottom - d.y
+          const min = Math.min(oL, oR, oT, oB)
+          if (min === oL) { d.x = cb.left - d.size; d.dx = -Math.abs(d.dx); }
+          else if (min === oR) { d.x = cb.right; d.dx = Math.abs(d.dx); }
+          else if (min === oT) { d.y = cb.top - d.size; d.dy = -Math.abs(d.dy); }
+          else { d.y = cb.bottom; d.dy = Math.abs(d.dy); }
+        }
+
+        if (iconRefs.current[i])
+          iconRefs.current[i].style.transform = 'translate(' + d.x + 'px,' + d.y + 'px) rotate(' + d.r + 'deg)'
       })
 
-      id = requestAnimationFrame(tick)
+      frameId = requestAnimationFrame(tick)
     }
 
-    id = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(id)
+    frameId = requestAnimationFrame(tick)
+    return () => {
+      cancelAnimationFrame(frameId)
+      window.removeEventListener('resize', onResize)
+    }
   }, [])
 
   async function handleSubmit(e) {
@@ -151,7 +204,7 @@ function Login() {
         </div>
       ))}
 
-      <div className="login-card">
+      <div className="login-card" ref={cardRef}>
         <div className="login-logo">ClubPlan</div>
         <h2>Iniciar sesion</h2>
         <p className="login-subtitle">Gestiona tus equipos y convocatorias</p>
