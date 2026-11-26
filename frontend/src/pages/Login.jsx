@@ -19,7 +19,6 @@ function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPass, setShowPass] = useState(false)
-  const [shake, setShake] = useState(false)
   const navigate = useNavigate()
   const containerRef = useRef(null)
   const cardRef = useRef(null)
@@ -128,9 +127,7 @@ function Login() {
     const data = await login(email, password)
     setLoading(false)
     if (data.error) {
-      setError(data.error)
-      setShake(true)
-      setTimeout(() => setShake(false), 500)
+      setError('El email o la contraseña no son correctos')
     } else {
       setToken(data.token)
       setUser(data.usuario)
@@ -146,7 +143,7 @@ function Login() {
         </div>
       ))}
 
-      <div className={'login-card' + (shake ? ' shake' : '')} ref={cardRef}>
+      <div className="login-card" ref={cardRef}>
         <div className="login-logo">ClubPlan</div>
         <h2>Iniciar sesión</h2>
         <p className="login-subtitle">Gestiona tus equipos y convocatorias</p>
