@@ -86,3 +86,17 @@ export function getAsistencia(convocatoriaId) {
 export function confirmarAsistencia(convocatoriaId, estado) {
   return request('/convocatorias/' + convocatoriaId + '/asistencia', { method: 'PUT', body: JSON.stringify({ estado }) })
 }
+
+export function eliminarConvocatoria(id) {
+  return request('/convocatorias/' + id, { method: 'DELETE' })
+}
+
+export function getPerfil() {
+  return request('/auth/perfil')
+}
+
+export function editarPerfil(nombre, password) {
+  const body = { nombre }
+  if (password) body.password = password
+  return request('/auth/perfil', { method: 'PUT', body: JSON.stringify(body) })
+}

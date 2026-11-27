@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, getUser } from '../api'
+import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, eliminarConvocatoria, getUser } from '../api'
 
 const DEPORTES = {
   futbol: { nombre: 'Fútbol', emoji: '⚽' },
@@ -66,6 +66,13 @@ function Equipo() {
     await crearConvocatoria(id, formConv)
     setFormConv({ titulo: '', descripcion: '', fecha: '', lugar: '' })
     setCreando(false)
+    getConvocatorias(id).then(setConvocatorias)
+  }
+
+  async function handleEliminarConv(e, convId) {
+    e.stopPropagation()
+    if (!confirm('¿Eliminar esta convocatoria?')) return
+    await eliminarConvocatoria(convId)
     getConvocatorias(id).then(setConvocatorias)
   }
 
@@ -196,7 +203,7 @@ function Equipo() {
       {convocatorias.map(c => {
         const f = formatFecha(c.fecha)
         return (
-          <div key={c.id} className="card card-clickable" onClick={() => navigate('/convocatoria/' + c.id)} style={{ marginBottom: '8px' }}>
+          <div key={c.id} className="card card-clickable" onClick={() => navigate('/convocatoria/' + c.id)} style={{ marginBottom: '8px', position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ textAlign: 'center', minWidth: '60px', padding: '8px', background: 'var(--fondo)', borderRadius: '10px' }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--primary)', textTransform: 'uppercase' }}>{f.dia}</div>
@@ -205,9 +212,22 @@ function Equipo() {
               <div style={{ flex: 1 }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: '700' }}>{c.titulo}</h3>
                 {c.lugar && <p style={{ color: 'var(--texto-suave)', fontSize: '0.85rem', marginTop: '2px' }}>{c.lugar}</p>}
+                {c.total > 0 && (
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '6px', fontSize: '0.75rem' }}>
+                    <span style={{ color: 'var(--accent)', fontWeight: '600' }}>{c.confirmados} confirmados</span>
+                    <span style={{ color: 'var(--amarillo)', fontWeight: '600' }}>{c.pendientes} pendientes</span>
+                    <span style={{ color: 'var(--rojo)', fontWeight: '600' }}>{c.rechazados} no van</span>
+                  </div>
+                )}
               </div>
               <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>&#8250;</span>
             </div>
+            {esEntrenador && (
+              <button className="btn btn-danger" style={{ position: 'absolute', top: '10px', right: '10px', padding: '4px 10px', fontSize: '0.7rem' }}
+                onClick={e => handleEliminarConv(e, c.id)}>
+                Eliminar
+              </button>
+            )}
           </div>
         )
       })}

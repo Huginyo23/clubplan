@@ -31,8 +31,26 @@ public class ConvocatoriaController {
     }
 
     @GetMapping("/equipos/{equipoId}/convocatorias")
-    public List<Convocatoria> listar(@PathVariable Long equipoId) {
-        return convocatoriaRepository.findByEquipoIdOrderByFechaDesc(equipoId);
+    public List<Map<String, Object>> listar(@PathVariable Long equipoId) {
+        return convocatoriaRepository.findByEquipoIdOrderByFechaDesc(equipoId).stream()
+                .map(c -> {
+                    var asistencias = asistenciaRepository.findByConvocatoriaId(c.getId());
+                    long confirmados = asistencias.stream().filter(a -> a.getEstado() == Asistencia.Estado.CONFIRMADO).count();
+                    long rechazados = asistencias.stream().filter(a -> a.getEstado() == Asistencia.Estado.RECHAZADO).count();
+                    long pendientes = asistencias.stream().filter(a -> a.getEstado() == Asistencia.Estado.PENDIENTE).count();
+                    var data = new java.util.HashMap<String, Object>();
+                    data.put("id", c.getId());
+                    data.put("titulo", c.getTitulo());
+                    data.put("descripcion", c.getDescripcion());
+                    data.put("fecha", c.getFecha().toString());
+                    data.put("lugar", c.getLugar());
+                    data.put("confirmados", confirmados);
+                    data.put("rechazados", rechazados);
+                    data.put("pendientes", pendientes);
+                    data.put("total", asistencias.size());
+                    return (Map<String, Object>) data;
+                })
+                .toList();
     }
 
     @PostMapping("/equipos/{equipoId}/convocatorias")
@@ -61,6 +79,19 @@ public class ConvocatoriaController {
                     return ResponseEntity.ok(conv);
                 })
                 .orElse(ResponseEntity.status(403).body(null));
+    }
+
+    @DeleteMapping("/convocatorias/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id,
+                                       @AuthenticationPrincipal Usuario usuario) {
+        return convocatoriaRepository.findById(id)
+                .filter(c -> c.getCreador().getId().equals(usuario.getId()))
+                .map(conv -> {
+                    asistenciaRepository.deleteAll(asistenciaRepository.findByConvocatoriaId(conv.getId()));
+                    convocatoriaRepository.delete(conv);
+                    return ResponseEntity.ok(Map.of("mensaje", "Convocatoria eliminada"));
+                })
+                .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
     }
 
     @GetMapping("/convocatorias/{id}/asistencia")

@@ -4,6 +4,7 @@ import com.clubplan.entity.Usuario;
 import com.clubplan.repository.UsuarioRepository;
 import com.clubplan.service.JwtService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,5 +64,36 @@ public class AuthController {
                     )));
                 })
                 .orElse(ResponseEntity.status(401).body(Map.of("error", "Credenciales incorrectas")));
+    }
+
+    @GetMapping("/perfil")
+    public ResponseEntity<?> perfil(@AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(Map.of(
+                "id", usuario.getId(),
+                "nombre", usuario.getNombre(),
+                "email", usuario.getEmail(),
+                "rol", usuario.getRol()
+        ));
+    }
+
+    @PutMapping("/perfil")
+    public ResponseEntity<?> editarPerfil(@AuthenticationPrincipal Usuario usuario,
+                                           @RequestBody Map<String, String> body) {
+        if (body.containsKey("nombre")) {
+            usuario.setNombre(body.get("nombre"));
+        }
+        if (body.containsKey("password") && !body.get("password").isEmpty()) {
+            usuario.setPassword(passwordEncoder.encode(body.get("password")));
+        }
+        usuarioRepository.save(usuario);
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "Perfil actualizado",
+                "usuario", Map.of(
+                        "id", usuario.getId(),
+                        "nombre", usuario.getNombre(),
+                        "email", usuario.getEmail(),
+                        "rol", usuario.getRol()
+                )
+        ));
     }
 }

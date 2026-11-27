@@ -15,8 +15,8 @@ function Navbar() {
     <nav className="navbar">
       <h1 style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>ClubPlan</h1>
       <div className="navbar-right">
-        <span className="navbar-user"><strong>{user?.nombre}</strong> · {user?.rol === 'ENTRENADOR' ? 'Entrenador' : 'Jugador'}</span>
-        <button onClick={logout}>Cerrar sesion</button>
+        <span className="navbar-user" style={{ cursor: 'pointer' }} onClick={() => navigate('/perfil')}><strong>{user?.nombre}</strong> · {user?.rol === 'ENTRENADOR' ? 'Entrenador' : 'Jugador'}</span>
+        <button onClick={logout}>Cerrar sesión</button>
       </div>
     </nav>
   )
