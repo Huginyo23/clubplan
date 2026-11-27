@@ -48,15 +48,13 @@ function Dashboard() {
   return (
     <div className="container">
       <div style={{ marginBottom: '28px' }}>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
-          {saludo}, {user?.nombre || 'Usuario'}
+        <p style={{ color: 'var(--texto-suave)', fontSize: '0.88rem', marginBottom: '2px' }}>{saludo}</p>
+        <h2 style={{ fontSize: '1.7rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
+          {user?.nombre || 'Usuario'}
         </h2>
-        <p style={{ color: 'var(--texto-suave)', marginTop: '4px' }}>
-          {user?.rol === 'ENTRENADOR' ? 'Panel de entrenador' : 'Panel de jugador'}
-        </p>
       </div>
 
-      <div className="stat-cards" style={{ marginBottom: '28px' }}>
+      <div className="stat-cards" style={{ marginBottom: '24px' }}>
         <div className="stat-card">
           <div className="stat-number" style={{ color: 'var(--primary)' }}>{equipos.length}</div>
           <p>{equipos.length === 1 ? 'Equipo' : 'Equipos'}</p>
@@ -75,42 +73,40 @@ function Dashboard() {
         </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '24px' }}>
         <button className="btn btn-outline" onClick={() => navigate('/calendario')} style={{ padding: '10px 20px' }}>
           &#128197; Ver calendario
         </button>
       </div>
 
       <div className="flex-between">
-        <div className="page-header" style={{ marginBottom: '0' }}>
-          <h2 style={{ fontSize: '1.3rem' }}>Mis equipos</h2>
-        </div>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: '700' }}>Mis equipos</h3>
         {user?.rol === 'ENTRENADOR' && (
-          <button className="btn btn-primary" onClick={() => setCreando(!creando)}>
+          <button className="btn btn-primary" onClick={() => setCreando(!creando)} style={{ padding: '9px 18px', fontSize: '0.85rem' }}>
             {creando ? 'Cancelar' : '+ Nuevo equipo'}
           </button>
         )}
       </div>
 
       {creando && (
-        <form onSubmit={handleCrear} className="card" style={{ marginTop: '16px' }}>
+        <form onSubmit={handleCrear} className="card" style={{ marginTop: '12px', animation: 'fadeUp 0.2s ease' }}>
           <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.85rem' }}>Nombre del equipo</label>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.82rem' }}>Nombre del equipo</label>
               <input
                 placeholder="Ej: Juvenil A"
                 value={nombre}
                 onChange={e => setNombre(e.target.value)}
                 required
-                style={{ width: '100%', padding: '12px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.95rem', fontFamily: 'inherit' }}
+                style={{ width: '100%', padding: '11px 14px', border: '1.5px solid var(--borde)', borderRadius: '10px', fontSize: '0.92rem', fontFamily: 'inherit', background: 'var(--blanco)', color: 'var(--texto)' }}
               />
             </div>
-            <div style={{ width: '180px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.85rem' }}>Deporte</label>
+            <div style={{ width: '170px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.82rem' }}>Deporte</label>
               <select
                 value={deporte}
                 onChange={e => setDeporte(e.target.value)}
-                style={{ width: '100%', padding: '12px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.95rem', fontFamily: 'inherit' }}
+                style={{ width: '100%', padding: '11px 14px', border: '1.5px solid var(--borde)', borderRadius: '10px', fontSize: '0.92rem', fontFamily: 'inherit', background: 'var(--blanco)', color: 'var(--texto)' }}
               >
                 {Object.entries(DEPORTES).map(([key, d]) => (
                   <option key={key} value={key}>{d.emoji} {d.nombre}</option>
@@ -122,18 +118,22 @@ function Dashboard() {
         </form>
       )}
 
-      <div className="grid" style={{ marginTop: '16px' }}>
+      <div className="grid" style={{ marginTop: '14px' }}>
         {equipos.map(equipo => (
           <div key={equipo.id} className="card card-clickable" onClick={() => navigate('/equipo/' + equipo.id)} style={{ position: 'relative' }}>
-            <div className="card-icon card-icon-purple" style={{ fontSize: '1.5rem' }}>
-              {DEPORTES[equipo.deporte]?.emoji || DEPORTES.futbol.emoji}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+              <div className="card-icon card-icon-purple" style={{ fontSize: '1.4rem', flexShrink: 0 }}>
+                {DEPORTES[equipo.deporte]?.emoji || DEPORTES.futbol.emoji}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ fontSize: '1.05rem' }}>{equipo.nombre}</h3>
+                <p style={{ fontSize: '0.82rem' }}>{DEPORTES[equipo.deporte]?.nombre || 'Fútbol'} &middot; {equipo.jugadores?.length || 0} jugadores</p>
+              </div>
             </div>
-            <h3>{equipo.nombre}</h3>
-            <p>{DEPORTES[equipo.deporte]?.nombre || 'Fútbol'} &middot; {equipo.entrenador?.nombre || 'Tú'}</p>
             {user?.rol === 'ENTRENADOR' && equipo.entrenador?.id === user?.id && (
               <button
                 className="btn btn-danger"
-                style={{ position: 'absolute', top: '12px', right: '12px', padding: '6px 12px', fontSize: '0.75rem' }}
+                style={{ position: 'absolute', top: '12px', right: '12px', padding: '5px 10px', fontSize: '0.72rem' }}
                 onClick={e => handleEliminar(e, equipo.id)}
               >
                 Eliminar

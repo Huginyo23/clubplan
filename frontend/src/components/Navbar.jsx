@@ -7,6 +7,7 @@ function Navbar() {
   const user = getUser()
   const [dark, setDark] = useState(localStorage.getItem('tema') === 'dark')
   const [pendientes, setPendientes] = useState(0)
+  const [menuAbierto, setMenuAbierto] = useState(false)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
@@ -25,12 +26,20 @@ function Navbar() {
     window.location.href = '/login'
   }
 
+  function navegar(ruta) {
+    navigate(ruta)
+    setMenuAbierto(false)
+  }
+
   return (
     <nav className="navbar">
-      <h1 style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>ClubPlan</h1>
-      <div className="navbar-right">
+      <h1 style={{ cursor: 'pointer' }} onClick={() => navegar('/')}>ClubPlan</h1>
+      <button className="navbar-menu-btn" onClick={() => setMenuAbierto(!menuAbierto)}>
+        {menuAbierto ? '✕' : '☰'}
+      </button>
+      <div className={'navbar-right' + (menuAbierto ? ' open' : '')}>
         {pendientes > 0 && (
-          <span className="notif-badge" style={{ cursor: 'pointer', fontSize: '1.2rem' }} onClick={() => navigate('/')}>
+          <span className="notif-badge" style={{ cursor: 'pointer', fontSize: '1.1rem' }} onClick={() => navegar('/')}>
             &#128276;
             <span className="badge-count">{pendientes}</span>
           </span>
@@ -38,15 +47,15 @@ function Navbar() {
         <button className="theme-toggle" onClick={() => setDark(!dark)}>
           {dark ? '☀️' : '🌙'}
         </button>
-        <span className="navbar-user" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigate('/perfil')}>
+        <span className="navbar-user" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navegar('/perfil')}>
           {user?.foto ? (
-            <img src={user.foto} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
+            <img src={user.foto} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.15)' }} />
           ) : (
-            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: '700' }}>
+            <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--primary-light))', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: '700' }}>
               {user?.nombre?.charAt(0).toUpperCase()}
             </span>
           )}
-          <strong>{user?.nombre}</strong> · {user?.rol === 'ENTRENADOR' ? 'Entrenador' : 'Jugador'}
+          <strong>{user?.nombre}</strong>
         </span>
         <button onClick={logout}>Cerrar sesión</button>
       </div>
