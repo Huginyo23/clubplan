@@ -163,6 +163,15 @@ body {
   animation: fadeUp 300ms var(--ease-out);
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.login-logo-spin {
+  animation: spin 1s linear infinite;
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }

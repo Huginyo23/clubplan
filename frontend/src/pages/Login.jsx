@@ -155,7 +155,15 @@ function Login() {
       ))}
 
       <div className="login-card" ref={cardRef}>
-        <div className="login-logo" title="Gestión deportiva">ClubPlan</div>
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <img
+            src="/logo.webp"
+            alt="ClubPlan"
+            className={loading ? 'login-logo-spin' : ''}
+            style={{ width: '100px', height: '100px', objectFit: 'contain', marginBottom: '12px' }}
+          />
+          <div className="login-logo" style={{ marginBottom: '0' }}>ClubPlan</div>
+        </div>
         <h2>Iniciar sesión</h2>
         <p className="login-subtitle">Gestiona tus equipos y convocatorias</p>
         {error && <p className="error">{error}</p>}
