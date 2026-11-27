@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -68,12 +69,13 @@ public class AuthController {
 
     @GetMapping("/perfil")
     public ResponseEntity<?> perfil(@AuthenticationPrincipal Usuario usuario) {
-        return ResponseEntity.ok(Map.of(
-                "id", usuario.getId(),
-                "nombre", usuario.getNombre(),
-                "email", usuario.getEmail(),
-                "rol", usuario.getRol()
-        ));
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", usuario.getId());
+        data.put("nombre", usuario.getNombre());
+        data.put("email", usuario.getEmail());
+        data.put("rol", usuario.getRol());
+        data.put("foto", usuario.getFoto());
+        return ResponseEntity.ok(data);
     }
 
     @PutMapping("/perfil")
@@ -85,15 +87,16 @@ public class AuthController {
         if (body.containsKey("password") && !body.get("password").isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(body.get("password")));
         }
+        if (body.containsKey("foto")) {
+            usuario.setFoto(body.get("foto"));
+        }
         usuarioRepository.save(usuario);
-        return ResponseEntity.ok(Map.of(
-                "mensaje", "Perfil actualizado",
-                "usuario", Map.of(
-                        "id", usuario.getId(),
-                        "nombre", usuario.getNombre(),
-                        "email", usuario.getEmail(),
-                        "rol", usuario.getRol()
-                )
-        ));
+        Map<String, Object> usuarioData = new HashMap<>();
+        usuarioData.put("id", usuario.getId());
+        usuarioData.put("nombre", usuario.getNombre());
+        usuarioData.put("email", usuario.getEmail());
+        usuarioData.put("rol", usuario.getRol());
+        usuarioData.put("foto", usuario.getFoto());
+        return ResponseEntity.ok(Map.of("mensaje", "Perfil actualizado", "usuario", usuarioData));
     }
 }

@@ -7,6 +7,7 @@ function Perfil() {
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [rol, setRol] = useState('')
+  const [foto, setFoto] = useState(null)
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
   const [mensaje, setMensaje] = useState('')
@@ -17,13 +18,27 @@ function Perfil() {
       setNombre(data.nombre)
       setEmail(data.email)
       setRol(data.rol)
+      setFoto(data.foto || null)
     })
   }, [])
+
+  function handleFoto(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    if (file.size > 500000) {
+      setMensaje('La imagen no puede superar 500 KB')
+      setTimeout(() => setMensaje(''), 3000)
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => setFoto(reader.result)
+    reader.readAsDataURL(file)
+  }
 
   async function handleGuardar(e) {
     e.preventDefault()
     setGuardando(true)
-    const data = await editarPerfil(nombre, password)
+    const data = await editarPerfil(nombre, password, foto)
     setGuardando(false)
     if (data.usuario) {
       setUser(data.usuario)
@@ -45,8 +60,18 @@ function Perfil() {
 
       <div className="card">
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid var(--borde)' }}>
-          <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: '700' }}>
-            {nombre.charAt(0).toUpperCase()}
+          <div style={{ position: 'relative' }}>
+            {foto ? (
+              <img src={foto} alt="Foto" style={{ width: '70px', height: '70px', borderRadius: '50%', objectFit: 'cover' }} />
+            ) : (
+              <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: '700' }}>
+                {nombre.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <label style={{ position: 'absolute', bottom: '-4px', right: '-4px', width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.8rem', border: '2px solid white' }}>
+              &#9998;
+              <input type="file" accept="image/*" onChange={handleFoto} style={{ display: 'none' }} />
+            </label>
           </div>
           <div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: '700' }}>{nombre}</h3>

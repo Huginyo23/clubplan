@@ -26,6 +26,10 @@ public class Usuario {
     @Column(nullable = false)
     private Rol rol;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String foto;
+
     public enum Rol {
         ENTRENADOR, JUGADOR
     }

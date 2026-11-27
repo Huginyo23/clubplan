@@ -95,8 +95,9 @@ export function getPerfil() {
   return request('/auth/perfil')
 }
 
-export function editarPerfil(nombre, password) {
+export function editarPerfil(nombre, password, foto) {
   const body = { nombre }
   if (password) body.password = password
+  if (foto !== undefined) body.foto = foto
   return request('/auth/perfil', { method: 'PUT', body: JSON.stringify(body) })
 }
