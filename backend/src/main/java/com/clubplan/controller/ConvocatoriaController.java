@@ -2,6 +2,7 @@ package com.clubplan.controller;
 
 import com.clubplan.entity.Asistencia;
 import com.clubplan.entity.Convocatoria;
+import com.clubplan.entity.Equipo;
 import com.clubplan.entity.Usuario;
 import com.clubplan.repository.AsistenciaRepository;
 import com.clubplan.repository.ConvocatoriaRepository;
