@@ -165,3 +165,19 @@ export function eliminarPartido(id) {
 export function getLigaStats(ligaId) {
   return request('/ligas/' + ligaId + '/stats')
 }
+
+export function getClasificacion(ligaId) {
+  return request('/ligas/' + ligaId + '/clasificacion')
+}
+
+export function addClasificacion(ligaId, data) {
+  return request('/ligas/' + ligaId + '/clasificacion', { method: 'POST', body: JSON.stringify(data) })
+}
+
+export function editarClasificacion(id, data) {
+  return request('/ligas/clasificacion/' + id, { method: 'PUT', body: JSON.stringify(data) })
+}
+
+export function eliminarClasificacion(id) {
+  return request('/ligas/clasificacion/' + id, { method: 'DELETE' })
+}

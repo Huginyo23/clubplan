@@ -1,8 +1,10 @@
 package com.clubplan.controller;
 
+import com.clubplan.entity.ClasificacionEquipo;
 import com.clubplan.entity.Liga;
 import com.clubplan.entity.Partido;
 import com.clubplan.entity.Usuario;
+import com.clubplan.repository.ClasificacionEquipoRepository;
 import com.clubplan.repository.EquipoRepository;
 import com.clubplan.repository.LigaRepository;
 import com.clubplan.repository.PartidoRepository;
@@ -22,13 +24,16 @@ public class LigaController {
     private final LigaRepository ligaRepository;
     private final PartidoRepository partidoRepository;
     private final EquipoRepository equipoRepository;
+    private final ClasificacionEquipoRepository clasificacionRepository;
 
     public LigaController(LigaRepository ligaRepository,
                            PartidoRepository partidoRepository,
-                           EquipoRepository equipoRepository) {
+                           EquipoRepository equipoRepository,
+                           ClasificacionEquipoRepository clasificacionRepository) {
         this.ligaRepository = ligaRepository;
         this.partidoRepository = partidoRepository;
         this.equipoRepository = equipoRepository;
+        this.clasificacionRepository = clasificacionRepository;
     }
 
     @GetMapping("/equipo/{equipoId}")
@@ -61,6 +66,7 @@ public class LigaController {
                 .filter(l -> l.getEquipo().getEntrenador().getId().equals(usuario.getId()))
                 .map(liga -> {
                     partidoRepository.deleteAll(partidoRepository.findByLigaIdOrderByJornadaAsc(id));
+                    clasificacionRepository.deleteAll(clasificacionRepository.findByLigaIdOrderByPosicionAsc(id));
                     ligaRepository.delete(liga);
                     return ResponseEntity.ok(Map.of("mensaje", "Liga eliminada"));
                 })
@@ -136,6 +142,87 @@ public class LigaController {
                 .map(p -> {
                     partidoRepository.delete(p);
                     return ResponseEntity.ok(Map.of("mensaje", "Partido eliminado"));
+                })
+                .orElse(ResponseEntity.status(403).build());
+    }
+
+    @GetMapping("/{ligaId}/clasificacion")
+    public List<Map<String, Object>> clasificacion(@PathVariable Long ligaId) {
+        return clasificacionRepository.findByLigaIdOrderByPosicionAsc(ligaId).stream()
+                .map(c -> {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("id", c.getId());
+                    data.put("nombre", c.getNombre());
+                    data.put("posicion", c.getPosicion());
+                    data.put("pj", c.getPj());
+                    data.put("pg", c.getPg());
+                    data.put("pe", c.getPe());
+                    data.put("pp", c.getPp());
+                    data.put("gf", c.getGf());
+                    data.put("gc", c.getGc());
+                    data.put("pts", c.getPts());
+                    data.put("esPropio", c.isEsPropio());
+                    return data;
+                })
+                .toList();
+    }
+
+    @PostMapping("/{ligaId}/clasificacion")
+    public ResponseEntity<?> addClasificacion(@PathVariable Long ligaId,
+                                               @AuthenticationPrincipal Usuario usuario,
+                                               @RequestBody Map<String, Object> body) {
+        return ligaRepository.findById(ligaId)
+                .filter(l -> l.getEquipo().getEntrenador().getId().equals(usuario.getId()))
+                .map(liga -> {
+                    ClasificacionEquipo c = new ClasificacionEquipo();
+                    c.setLiga(liga);
+                    c.setNombre((String) body.get("nombre"));
+                    c.setPosicion(((Number) body.get("posicion")).intValue());
+                    c.setPj(((Number) body.get("pj")).intValue());
+                    c.setPg(((Number) body.get("pg")).intValue());
+                    c.setPe(((Number) body.get("pe")).intValue());
+                    c.setPp(((Number) body.get("pp")).intValue());
+                    c.setGf(((Number) body.get("gf")).intValue());
+                    c.setGc(((Number) body.get("gc")).intValue());
+                    c.setPts(((Number) body.get("pts")).intValue());
+                    c.setEsPropio(Boolean.TRUE.equals(body.get("esPropio")));
+                    clasificacionRepository.save(c);
+                    return ResponseEntity.ok(c);
+                })
+                .orElse(ResponseEntity.status(403).build());
+    }
+
+    @PutMapping("/clasificacion/{id}")
+    public ResponseEntity<?> editarClasificacion(@PathVariable Long id,
+                                                  @AuthenticationPrincipal Usuario usuario,
+                                                  @RequestBody Map<String, Object> body) {
+        return clasificacionRepository.findById(id)
+                .filter(c -> c.getLiga().getEquipo().getEntrenador().getId().equals(usuario.getId()))
+                .map(c -> {
+                    c.setNombre((String) body.get("nombre"));
+                    c.setPosicion(((Number) body.get("posicion")).intValue());
+                    c.setPj(((Number) body.get("pj")).intValue());
+                    c.setPg(((Number) body.get("pg")).intValue());
+                    c.setPe(((Number) body.get("pe")).intValue());
+                    c.setPp(((Number) body.get("pp")).intValue());
+                    c.setGf(((Number) body.get("gf")).intValue());
+                    c.setGc(((Number) body.get("gc")).intValue());
+                    c.setPts(((Number) body.get("pts")).intValue());
+                    c.setEsPropio(Boolean.TRUE.equals(body.get("esPropio")));
+                    clasificacionRepository.save(c);
+                    return ResponseEntity.ok(c);
+                })
+                .orElse(ResponseEntity.status(403).build());
+    }
+
+    @DeleteMapping("/clasificacion/{id}")
+    public ResponseEntity<?> eliminarClasificacion(@PathVariable Long id,
+                                                    @AuthenticationPrincipal Usuario usuario) {
+        return clasificacionRepository.findById(id)
+                .filter(c -> c.getLiga().getEquipo().getEntrenador().getId().equals(usuario.getId()))
+                .map(c -> {
+                    clasificacionRepository.delete(c);
+                    return ResponseEntity.ok(Map.of("mensaje", "Equipo eliminado de clasificación"));
                 })
                 .orElse(ResponseEntity.status(403).build());
     }
