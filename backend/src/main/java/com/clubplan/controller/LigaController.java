@@ -76,9 +76,6 @@ public class LigaController {
                         liga.setIsquadTorneoId(Long.parseLong(body.get("isquadTorneoId")));
                     }
                     ligaRepository.save(liga);
-                    if (liga.getIsquadTorneoId() != null) {
-                        isquadService.sincronizar(liga);
-                    }
                     return ResponseEntity.ok(liga);
                 })
                 .orElse(ResponseEntity.status(403).build());

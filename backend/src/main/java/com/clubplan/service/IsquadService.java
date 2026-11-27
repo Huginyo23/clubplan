@@ -6,6 +6,7 @@ import com.clubplan.repository.ClasificacionEquipoRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,7 +20,14 @@ public class IsquadService {
     private static final String API_URL = "https://resultadosbalonmano.isquad.es/maqueta/json/beta.php";
     private final ClasificacionEquipoRepository clasificacionRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(10000);
+        factory.setReadTimeout(15000);
+        restTemplate = new RestTemplate(factory);
+    }
 
     public IsquadService(ClasificacionEquipoRepository clasificacionRepository) {
         this.clasificacionRepository = clasificacionRepository;
