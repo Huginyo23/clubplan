@@ -22,7 +22,7 @@ function Navbar() {
   function logout() {
     removeToken()
     localStorage.removeItem('usuario')
-    navigate('/login')
+    window.location.href = '/login'
   }
 
   return (
