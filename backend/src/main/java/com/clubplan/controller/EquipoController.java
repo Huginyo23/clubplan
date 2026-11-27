@@ -59,6 +59,21 @@ public class EquipoController {
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editar(@PathVariable Long id,
+                                     @AuthenticationPrincipal Usuario usuario,
+                                     @RequestBody Map<String, String> body) {
+        return equipoRepository.findById(id)
+                .filter(e -> e.getEntrenador().getId().equals(usuario.getId()))
+                .map(equipo -> {
+                    if (body.containsKey("nombre")) equipo.setNombre(body.get("nombre"));
+                    if (body.containsKey("deporte")) equipo.setDeporte(body.get("deporte"));
+                    equipoRepository.save(equipo);
+                    return ResponseEntity.ok(Map.of("mensaje", "Equipo actualizado"));
+                })
+                .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> detalle(@PathVariable Long id) {
         return equipoRepository.findById(id)
@@ -88,6 +103,20 @@ public class EquipoController {
                                 return ResponseEntity.ok(Map.of("mensaje", "Jugador añadido"));
                             })
                             .orElse(ResponseEntity.badRequest().body(Map.of("error", "Usuario no encontrado")));
+                })
+                .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
+    }
+
+    @DeleteMapping("/{id}/jugadores/{jugadorId}")
+    public ResponseEntity<?> removeJugador(@PathVariable Long id,
+                                            @PathVariable Long jugadorId,
+                                            @AuthenticationPrincipal Usuario usuario) {
+        return equipoRepository.findById(id)
+                .filter(e -> e.getEntrenador().getId().equals(usuario.getId()))
+                .map(equipo -> {
+                    equipo.getJugadores().removeIf(j -> j.getId().equals(jugadorId));
+                    equipoRepository.save(equipo);
+                    return ResponseEntity.ok(Map.of("mensaje", "Jugador eliminado del equipo"));
                 })
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
     }

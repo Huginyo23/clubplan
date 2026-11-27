@@ -59,8 +59,16 @@ export function getEquipo(id) {
   return request('/equipos/' + id)
 }
 
+export function editarEquipo(id, nombre, deporte) {
+  return request('/equipos/' + id, { method: 'PUT', body: JSON.stringify({ nombre, deporte }) })
+}
+
 export function addJugador(equipoId, email) {
   return request('/equipos/' + equipoId + '/jugadores', { method: 'POST', body: JSON.stringify({ email }) })
+}
+
+export function removeJugador(equipoId, jugadorId) {
+  return request('/equipos/' + equipoId + '/jugadores/' + jugadorId, { method: 'DELETE' })
 }
 
 export function getConvocatorias(equipoId) {
