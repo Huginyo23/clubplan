@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, eliminarConvocatoria, getEstadisticas, getUser } from '../api'
+import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, eliminarConvocatoria, getEstadisticas, getMensajes, enviarMensaje, getUser } from '../api'
 
 const DEPORTES = {
   futbol: { nombre: 'Fútbol', emoji: '⚽' },
@@ -28,12 +28,24 @@ function Equipo() {
   const [editDeporte, setEditDeporte] = useState('')
   const [stats, setStats] = useState(null)
   const [verStats, setVerStats] = useState(false)
+  const [mensajes, setMensajes] = useState([])
+  const [textoMsg, setTextoMsg] = useState('')
+  const [verChat, setVerChat] = useState(false)
 
   useEffect(() => {
     getEquipo(id).then(setEquipo)
     getConvocatorias(id).then(setConvocatorias)
     getEstadisticas(id).then(setStats)
+    getMensajes(id).then(setMensajes)
   }, [id])
+
+  async function handleEnviarMsg(e) {
+    e.preventDefault()
+    if (!textoMsg.trim()) return
+    await enviarMensaje(id, textoMsg)
+    setTextoMsg('')
+    getMensajes(id).then(setMensajes)
+  }
 
   const esEntrenador = equipo?.entrenador?.id === user?.id
   const dep = DEPORTES[equipo?.deporte] || DEPORTES.futbol
@@ -278,6 +290,48 @@ function Equipo() {
           <p>No hay convocatorias todavía</p>
         </div>
       )}
+
+      <div className="card" style={{ marginTop: '24px' }}>
+        <div className="flex-between" style={{ marginBottom: '0' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: '700' }}>&#128172; Chat del equipo</h3>
+          <button className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => setVerChat(!verChat)}>
+            {verChat ? 'Ocultar' : 'Abrir'} {mensajes.length > 0 && '(' + mensajes.length + ')'}
+          </button>
+        </div>
+        {verChat && (
+          <div style={{ marginTop: '16px' }}>
+            <div style={{ maxHeight: '300px', overflowY: 'auto', marginBottom: '12px', padding: '8px', background: 'var(--fondo)', borderRadius: '10px' }}>
+              {mensajes.length === 0 && (
+                <p style={{ color: 'var(--texto-suave)', textAlign: 'center', padding: '20px', fontSize: '0.9rem' }}>No hay mensajes todavía</p>
+              )}
+              {mensajes.map(m => {
+                const esMio = m.usuario.id === user?.id
+                return (
+                  <div key={m.id} style={{ display: 'flex', justifyContent: esMio ? 'flex-end' : 'flex-start', marginBottom: '8px' }}>
+                    <div style={{ maxWidth: '70%', padding: '8px 14px', borderRadius: esMio ? '14px 14px 4px 14px' : '14px 14px 14px 4px', background: esMio ? 'var(--primary)' : 'var(--blanco)', color: esMio ? 'white' : 'var(--texto)', border: esMio ? 'none' : '1px solid var(--borde)' }}>
+                      {!esMio && <div style={{ fontSize: '0.7rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '2px' }}>{m.usuario.nombre}</div>}
+                      <div style={{ fontSize: '0.9rem' }}>{m.texto}</div>
+                      <div style={{ fontSize: '0.65rem', opacity: 0.6, marginTop: '2px', textAlign: 'right' }}>
+                        {new Date(m.fecha).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <form onSubmit={handleEnviarMsg} style={{ display: 'flex', gap: '8px' }}>
+              <input
+                value={textoMsg}
+                onChange={e => setTextoMsg(e.target.value)}
+                placeholder="Escribe un mensaje..."
+                required
+                style={{ flex: 1, padding: '10px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.9rem', fontFamily: 'inherit' }}
+              />
+              <button type="submit" className="btn btn-primary" style={{ padding: '10px 20px' }}>Enviar</button>
+            </form>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

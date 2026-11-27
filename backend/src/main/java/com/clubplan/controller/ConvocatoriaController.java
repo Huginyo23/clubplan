@@ -94,12 +94,49 @@ public class ConvocatoriaController {
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
     }
 
+    @GetMapping("/convocatorias/todas")
+    public List<Map<String, Object>> todas(@AuthenticationPrincipal Usuario usuario) {
+        List<Equipo> equipos = new java.util.ArrayList<>();
+        equipos.addAll(equipoRepository.findByEntrenadorId(usuario.getId()));
+        equipos.addAll(equipoRepository.findByJugadorId(usuario.getId()));
+        List<Map<String, Object>> result = new java.util.ArrayList<>();
+        for (var equipo : equipos) {
+            for (var c : convocatoriaRepository.findByEquipoIdOrderByFechaDesc(equipo.getId())) {
+                var data = new java.util.HashMap<String, Object>();
+                data.put("id", c.getId());
+                data.put("titulo", c.getTitulo());
+                data.put("fecha", c.getFecha().toString());
+                data.put("lugar", c.getLugar());
+                data.put("equipoNombre", equipo.getNombre());
+                data.put("equipoId", equipo.getId());
+                result.add(data);
+            }
+        }
+        return result;
+    }
+
     @GetMapping("/convocatorias/pendientes")
     public ResponseEntity<?> pendientes(@AuthenticationPrincipal Usuario usuario) {
         long count = asistenciaRepository.findByUsuarioId(usuario.getId()).stream()
                 .filter(a -> a.getEstado() == Asistencia.Estado.PENDIENTE)
                 .count();
         return ResponseEntity.ok(Map.of("pendientes", count));
+    }
+
+    @GetMapping("/convocatorias/{id}/info")
+    public ResponseEntity<?> info(@PathVariable Long id) {
+        return convocatoriaRepository.findById(id)
+                .map(c -> {
+                    var data = new java.util.HashMap<String, Object>();
+                    data.put("id", c.getId());
+                    data.put("titulo", c.getTitulo());
+                    data.put("descripcion", c.getDescripcion());
+                    data.put("fecha", c.getFecha().toString());
+                    data.put("lugar", c.getLugar());
+                    data.put("equipoNombre", c.getEquipo().getNombre());
+                    return ResponseEntity.ok((Object) data);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/convocatorias/{id}/asistencia")

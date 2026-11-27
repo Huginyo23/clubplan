@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Equipo from './pages/Equipo'
 import ConvocatoriaDetalle from './pages/ConvocatoriaDetalle'
 import Perfil from './pages/Perfil'
+import Calendario from './pages/Calendario'
 
 function PrivateRoute({ children }) {
   return getUser() ? children : <Navigate to="/login" />
@@ -23,6 +24,7 @@ function App() {
         <Route path="/equipo/:id" element={<PrivateRoute><Equipo /></PrivateRoute>} />
         <Route path="/convocatoria/:id" element={<PrivateRoute><ConvocatoriaDetalle /></PrivateRoute>} />
         <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
+        <Route path="/calendario" element={<PrivateRoute><Calendario /></PrivateRoute>} />
       </Routes>
     </>
   )

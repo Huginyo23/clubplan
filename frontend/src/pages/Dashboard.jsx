@@ -75,6 +75,12 @@ function Dashboard() {
         </div>
       </div>
 
+      <div style={{ marginBottom: '20px' }}>
+        <button className="btn btn-outline" onClick={() => navigate('/calendario')} style={{ padding: '10px 20px' }}>
+          &#128197; Ver calendario
+        </button>
+      </div>
+
       <div className="flex-between">
         <div className="page-header" style={{ marginBottom: '0' }}>
           <h2 style={{ fontSize: '1.3rem' }}>Mis equipos</h2>

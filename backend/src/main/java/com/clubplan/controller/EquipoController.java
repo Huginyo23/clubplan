@@ -1,15 +1,18 @@
 package com.clubplan.controller;
 
 import com.clubplan.entity.Equipo;
+import com.clubplan.entity.Mensaje;
 import com.clubplan.entity.Usuario;
 import com.clubplan.repository.AsistenciaRepository;
 import com.clubplan.repository.ConvocatoriaRepository;
 import com.clubplan.repository.EquipoRepository;
+import com.clubplan.repository.MensajeRepository;
 import com.clubplan.repository.UsuarioRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,15 +27,18 @@ public class EquipoController {
     private final UsuarioRepository usuarioRepository;
     private final ConvocatoriaRepository convocatoriaRepository;
     private final AsistenciaRepository asistenciaRepository;
+    private final MensajeRepository mensajeRepository;
 
     public EquipoController(EquipoRepository equipoRepository,
                             UsuarioRepository usuarioRepository,
                             ConvocatoriaRepository convocatoriaRepository,
-                            AsistenciaRepository asistenciaRepository) {
+                            AsistenciaRepository asistenciaRepository,
+                            MensajeRepository mensajeRepository) {
         this.equipoRepository = equipoRepository;
         this.usuarioRepository = usuarioRepository;
         this.convocatoriaRepository = convocatoriaRepository;
         this.asistenciaRepository = asistenciaRepository;
+        this.mensajeRepository = mensajeRepository;
     }
 
     @GetMapping
@@ -173,5 +179,36 @@ public class EquipoController {
                     return ResponseEntity.ok(Map.of("mensaje", "Jugador eliminado del equipo"));
                 })
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
+    }
+
+    @GetMapping("/{id}/mensajes")
+    public List<Map<String, Object>> getMensajes(@PathVariable Long id) {
+        return mensajeRepository.findByEquipoIdOrderByFechaAsc(id).stream()
+                .map(m -> {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("id", m.getId());
+                    data.put("texto", m.getTexto());
+                    data.put("fecha", m.getFecha().toString());
+                    data.put("usuario", Map.of("id", m.getUsuario().getId(), "nombre", m.getUsuario().getNombre()));
+                    return data;
+                })
+                .toList();
+    }
+
+    @PostMapping("/{id}/mensajes")
+    public ResponseEntity<?> enviarMensaje(@PathVariable Long id,
+                                            @AuthenticationPrincipal Usuario usuario,
+                                            @RequestBody Map<String, String> body) {
+        return equipoRepository.findById(id)
+                .map(equipo -> {
+                    Mensaje mensaje = new Mensaje();
+                    mensaje.setEquipo(equipo);
+                    mensaje.setUsuario(usuario);
+                    mensaje.setTexto(body.get("texto"));
+                    mensaje.setFecha(LocalDateTime.now());
+                    mensajeRepository.save(mensaje);
+                    return ResponseEntity.ok(Map.of("mensaje", "Mensaje enviado"));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

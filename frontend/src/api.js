@@ -99,6 +99,22 @@ export function getPendientes() {
   return request('/convocatorias/pendientes')
 }
 
+export function getMensajes(equipoId) {
+  return request('/equipos/' + equipoId + '/mensajes')
+}
+
+export function enviarMensaje(equipoId, texto) {
+  return request('/equipos/' + equipoId + '/mensajes', { method: 'POST', body: JSON.stringify({ texto }) })
+}
+
+export function getConvocatoriaInfo(id) {
+  return request('/convocatorias/' + id + '/info')
+}
+
+export function getTodasConvocatorias() {
+  return request('/convocatorias/todas')
+}
+
 export function getPerfil() {
   return request('/auth/perfil')
 }
