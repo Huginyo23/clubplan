@@ -64,15 +64,15 @@ ${rechazados.map(a => '<tr class="rech"><td>' + a.jugador.nombre + '</td><td>No 
       </div>
 
       <div className="stat-cards" style={{ marginBottom: '24px' }}>
-        <div className="stat-card">
+        <div className="stat-card stagger-item">
           <div className="stat-number" style={{ color: 'var(--accent)' }}>{confirmados.length}</div>
           <p>Confirmados</p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card stagger-item">
           <div className="stat-number" style={{ color: 'var(--rojo)' }}>{rechazados.length}</div>
           <p>No van</p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card stagger-item">
           <div className="stat-number" style={{ color: 'var(--amarillo)' }}>{pendientesL.length}</div>
           <p>Pendientes</p>
         </div>
@@ -94,8 +94,8 @@ ${rechazados.map(a => '<tr class="rech"><td>' + a.jugador.nombre + '</td><td>No 
       {confirmados.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '10px', color: 'var(--accent)' }}>Confirmados ({confirmados.length})</h3>
-          {confirmados.map(a => (
-            <div key={a.id} className="card" style={{ padding: '12px 20px', marginBottom: '6px' }}>
+          {confirmados.map((a, i) => (
+            <div key={a.id} className="card stagger-item" style={{ padding: '12px 20px', marginBottom: '6px', animationDelay: `${i * 40}ms` }}>
               <div className="jugador-row" style={{ borderBottom: 'none', padding: 0 }}>
                 <div className="jugador-info">
                   <div className="jugador-avatar">{a.jugador.nombre.charAt(0).toUpperCase()}</div>
@@ -111,8 +111,8 @@ ${rechazados.map(a => '<tr class="rech"><td>' + a.jugador.nombre + '</td><td>No 
       {pendientesL.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '10px', color: 'var(--amarillo)' }}>Pendientes ({pendientesL.length})</h3>
-          {pendientesL.map(a => (
-            <div key={a.id} className="card" style={{ padding: '12px 20px', marginBottom: '6px' }}>
+          {pendientesL.map((a, i) => (
+            <div key={a.id} className="card stagger-item" style={{ padding: '12px 20px', marginBottom: '6px', animationDelay: `${i * 40}ms` }}>
               <div className="jugador-row" style={{ borderBottom: 'none', padding: 0 }}>
                 <div className="jugador-info">
                   <div className="jugador-avatar">{a.jugador.nombre.charAt(0).toUpperCase()}</div>
@@ -128,8 +128,8 @@ ${rechazados.map(a => '<tr class="rech"><td>' + a.jugador.nombre + '</td><td>No 
       {rechazados.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '10px', color: 'var(--rojo)' }}>No van ({rechazados.length})</h3>
-          {rechazados.map(a => (
-            <div key={a.id} className="card" style={{ padding: '12px 20px', marginBottom: '6px' }}>
+          {rechazados.map((a, i) => (
+            <div key={a.id} className="card stagger-item" style={{ padding: '12px 20px', marginBottom: '6px', animationDelay: `${i * 40}ms` }}>
               <div className="jugador-row" style={{ borderBottom: 'none', padding: 0 }}>
                 <div className="jugador-info">
                   <div className="jugador-avatar">{a.jugador.nombre.charAt(0).toUpperCase()}</div>

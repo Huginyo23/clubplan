@@ -166,8 +166,8 @@ function Equipo() {
       {esEntrenador && (
         <div className="card" style={{ marginBottom: '24px' }}>
           <h3 style={{ marginBottom: '16px', fontSize: '1.1rem', fontWeight: '700' }}>Jugadores</h3>
-          {equipo.jugadores?.map(j => (
-            <div key={j.id} className="jugador-row">
+          {equipo.jugadores?.map((j, i) => (
+            <div key={j.id} className="jugador-row stagger-item" style={{ animationDelay: `${i * 40}ms` }}>
               <div className="jugador-info">
                 <div className="jugador-avatar">{j.nombre.charAt(0).toUpperCase()}</div>
                 <div>
@@ -277,10 +277,10 @@ function Equipo() {
         </form>
       )}
 
-      {convocatorias.map(c => {
+      {convocatorias.map((c, i) => {
         const f = formatFecha(c.fecha)
         return (
-          <div key={c.id} className="card card-clickable" onClick={() => navigate('/convocatoria/' + c.id)} style={{ marginBottom: '8px', position: 'relative' }}>
+          <div key={c.id} className="card card-clickable stagger-item" onClick={() => navigate('/convocatoria/' + c.id)} style={{ marginBottom: '8px', position: 'relative', animationDelay: `${i * 50}ms` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ textAlign: 'center', minWidth: '60px', padding: '8px', background: 'var(--fondo)', borderRadius: '10px' }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--primary)', textTransform: 'uppercase' }}>{f.dia}</div>

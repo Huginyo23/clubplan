@@ -55,17 +55,17 @@ function Dashboard() {
       </div>
 
       <div className="stat-cards" style={{ marginBottom: '24px' }}>
-        <div className="stat-card">
+        <div className="stat-card stagger-item">
           <div className="stat-number" style={{ color: 'var(--primary)' }}>{equipos.length}</div>
           <p>{equipos.length === 1 ? 'Equipo' : 'Equipos'}</p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card stagger-item">
           <div className="stat-number" style={{ color: 'var(--accent)' }}>
             {equipos.reduce((acc, e) => acc + (e.jugadores?.length || 0), 0)}
           </div>
           <p>Jugadores</p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card stagger-item">
           <div className="stat-number" style={{ color: 'var(--amarillo)' }}>
             {user?.rol === 'ENTRENADOR' ? 'ENT' : 'JUG'}
           </div>
@@ -89,7 +89,7 @@ function Dashboard() {
       </div>
 
       {creando && (
-        <form onSubmit={handleCrear} className="card" style={{ marginTop: '12px', animation: 'fadeUp 0.2s ease' }}>
+        <form onSubmit={handleCrear} className="card" style={{ marginTop: '12px', animation: 'fadeUp 200ms cubic-bezier(0.23, 1, 0.32, 1)' }}>
           <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.82rem' }}>Nombre del equipo</label>
@@ -119,8 +119,8 @@ function Dashboard() {
       )}
 
       <div className="grid" style={{ marginTop: '14px' }}>
-        {equipos.map(equipo => (
-          <div key={equipo.id} className="card card-clickable" onClick={() => navigate('/equipo/' + equipo.id)} style={{ position: 'relative' }}>
+        {equipos.map((equipo, i) => (
+          <div key={equipo.id} className="card card-clickable stagger-item" onClick={() => navigate('/equipo/' + equipo.id)} style={{ position: 'relative', animationDelay: `${i * 50}ms` }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
               <div className="card-icon card-icon-purple" style={{ fontSize: '1.4rem', flexShrink: 0 }}>
                 {DEPORTES[equipo.deporte]?.emoji || DEPORTES.futbol.emoji}

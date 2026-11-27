@@ -27,7 +27,8 @@
   --sombra-hover: 0 12px 24px -4px rgba(108,92,231,0.18);
   --radio: 14px;
   --radio-sm: 10px;
-  --transicion: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 [data-theme="dark"] {
@@ -109,13 +110,15 @@ body {
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 500;
-  transition: var(--transicion);
+  transition: background 200ms var(--ease-out), border-color 200ms var(--ease-out);
   font-family: inherit;
 }
 
-.navbar button:hover {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(255,255,255,0.2);
+@media (hover: hover) and (pointer: fine) {
+  .navbar button:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
 }
 
 .navbar-menu-btn {
@@ -141,7 +144,7 @@ body {
     gap: 16px;
     z-index: 99;
     transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
   }
   .navbar-right.open {
     transform: translateX(0);
@@ -156,7 +159,7 @@ body {
   max-width: 920px;
   margin: 0 auto;
   padding: 28px 20px 48px;
-  animation: fadeUp 0.3s ease;
+  animation: fadeUp 300ms var(--ease-out);
 }
 
 @keyframes fadeUp {
@@ -165,8 +168,8 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .page-header { margin-bottom: 24px; }
@@ -191,15 +194,21 @@ body {
   padding: 22px;
   margin-bottom: 14px;
   box-shadow: var(--sombra);
-  transition: var(--transicion);
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out), border-color 200ms var(--ease-out);
 }
 
 .card-clickable { cursor: pointer; }
 
-.card-clickable:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sombra-hover);
-  border-color: var(--primary-light);
+@media (hover: hover) and (pointer: fine) {
+  .card-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-hover);
+    border-color: var(--primary-light);
+  }
+}
+
+.card-clickable:active {
+  transform: scale(0.98);
 }
 
 .card h3 {
@@ -241,7 +250,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  transition: var(--transicion);
+  transition: transform 160ms var(--ease-out), background 200ms var(--ease-out), box-shadow 200ms var(--ease-out), border-color 200ms var(--ease-out);
   font-family: inherit;
   white-space: nowrap;
 }
@@ -254,21 +263,10 @@ body {
   box-shadow: 0 2px 8px rgba(108,92,231,0.25);
 }
 
-.btn-primary:hover {
-  background: var(--primary-dark);
-  box-shadow: 0 4px 14px rgba(108,92,231,0.35);
-  transform: translateY(-1px);
-}
-
 .btn-accent {
   background: var(--accent);
   color: white;
   box-shadow: 0 2px 8px rgba(0,206,201,0.25);
-}
-
-.btn-accent:hover {
-  background: var(--accent-dark);
-  transform: translateY(-1px);
 }
 
 .btn-danger {
@@ -277,21 +275,31 @@ body {
   box-shadow: 0 2px 8px rgba(239,68,68,0.2);
 }
 
-.btn-danger:hover {
-  background: #DC2626;
-  transform: translateY(-1px);
-}
-
 .btn-outline {
   background: var(--blanco);
   border: 1.5px solid var(--borde);
   color: var(--texto);
 }
 
-.btn-outline:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: rgba(108,92,231,0.04);
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 14px rgba(108,92,231,0.35);
+    transform: translateY(-1px);
+  }
+  .btn-accent:hover {
+    background: var(--accent-dark);
+    transform: translateY(-1px);
+  }
+  .btn-danger:hover {
+    background: #DC2626;
+    transform: translateY(-1px);
+  }
+  .btn-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(108,92,231,0.04);
+  }
 }
 
 .form-group { margin-bottom: 16px; }
@@ -311,7 +319,7 @@ body {
   border-radius: var(--radio-sm);
   font-size: 0.92rem;
   font-family: inherit;
-  transition: var(--transicion);
+  transition: border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
   background: var(--blanco);
   color: var(--texto);
 }
@@ -397,7 +405,7 @@ body {
   position: relative;
   z-index: 1;
   box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-  animation: fadeIn 0.5s ease;
+  animation: fadeIn 400ms var(--ease-out);
 }
 
 .login-card h2 {
@@ -437,12 +445,14 @@ body {
   text-align: center;
   box-shadow: var(--sombra);
   border: 1px solid var(--borde);
-  transition: var(--transicion);
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
 }
 
-.stat-card:hover {
-  box-shadow: var(--sombra-md);
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .stat-card:hover {
+    box-shadow: var(--sombra-md);
+    transform: translateY(-1px);
+  }
 }
 
 .stat-card .stat-number {
@@ -536,11 +546,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transicion);
+  transition: background 200ms var(--ease-out);
 }
 
-.theme-toggle:hover {
-  background: rgba(255,255,255,0.12);
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover {
+    background: rgba(255,255,255,0.12);
+  }
 }
 
 .notif-badge { position: relative; }
@@ -571,4 +583,33 @@ body {
   .grid { grid-template-columns: 1fr; }
   .flex-between { flex-wrap: wrap; }
   .login-card { padding: 28px 24px; }
+}
+
+.stagger-item {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fadeUp 300ms var(--ease-out) forwards;
+}
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 50ms; }
+.stagger-item:nth-child(3) { animation-delay: 90ms; }
+.stagger-item:nth-child(4) { animation-delay: 120ms; }
+.stagger-item:nth-child(5) { animation-delay: 150ms; }
+.stagger-item:nth-child(6) { animation-delay: 175ms; }
+.stagger-item:nth-child(7) { animation-delay: 195ms; }
+.stagger-item:nth-child(8) { animation-delay: 215ms; }
+.stagger-item:nth-child(9) { animation-delay: 230ms; }
+
+@keyframes fade { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .container { animation: none; }
+  .login-card { animation: fade 200ms ease; }
+  .stagger-item {
+    animation: fade 200ms ease forwards;
+  }
+  .card-clickable,
+  .stat-card {
+    transition: box-shadow 200ms ease, border-color 200ms ease;
+  }
 }
