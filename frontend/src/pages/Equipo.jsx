@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, eliminarConvocatoria, getEstadisticas, getMensajes, enviarMensaje, setCapitan, setResultado, getUser } from '../api'
+import LigaSection from '../components/LigaSection'
 
 const DEPORTES = {
   futbol: { nombre: 'Fútbol', emoji: '⚽' },
@@ -330,6 +331,8 @@ function Equipo() {
           <p>No hay convocatorias todavía</p>
         </div>
       )}
+
+      <LigaSection equipoId={id} esEntrenador={esEntrenador} />
 
       <div className="card" style={{ marginTop: '24px' }}>
         <div className="flex-between" style={{ marginBottom: '0' }}>

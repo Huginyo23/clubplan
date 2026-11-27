@@ -133,3 +133,35 @@ export function editarPerfil(nombre, password, foto) {
   if (foto !== undefined) body.foto = foto
   return request('/auth/perfil', { method: 'PUT', body: JSON.stringify(body) })
 }
+
+export function getLigas(equipoId) {
+  return request('/ligas/equipo/' + equipoId)
+}
+
+export function crearLiga(equipoId, nombre, temporada, grupo) {
+  return request('/ligas', { method: 'POST', body: JSON.stringify({ equipoId, nombre, temporada, grupo }) })
+}
+
+export function eliminarLiga(id) {
+  return request('/ligas/' + id, { method: 'DELETE' })
+}
+
+export function getPartidos(ligaId) {
+  return request('/ligas/' + ligaId + '/partidos')
+}
+
+export function addPartido(ligaId, data) {
+  return request('/ligas/' + ligaId + '/partidos', { method: 'POST', body: JSON.stringify(data) })
+}
+
+export function editarPartido(id, data) {
+  return request('/ligas/partidos/' + id, { method: 'PUT', body: JSON.stringify(data) })
+}
+
+export function eliminarPartido(id) {
+  return request('/ligas/partidos/' + id, { method: 'DELETE' })
+}
+
+export function getLigaStats(ligaId) {
+  return request('/ligas/' + ligaId + '/stats')
+}
