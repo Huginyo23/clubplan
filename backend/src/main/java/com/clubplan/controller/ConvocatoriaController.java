@@ -94,6 +94,14 @@ public class ConvocatoriaController {
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
     }
 
+    @GetMapping("/convocatorias/pendientes")
+    public ResponseEntity<?> pendientes(@AuthenticationPrincipal Usuario usuario) {
+        long count = asistenciaRepository.findByUsuarioId(usuario.getId()).stream()
+                .filter(a -> a.getEstado() == Asistencia.Estado.PENDIENTE)
+                .count();
+        return ResponseEntity.ok(Map.of("pendientes", count));
+    }
+
     @GetMapping("/convocatorias/{id}/asistencia")
     public List<Map<String, Object>> verAsistencia(@PathVariable Long id) {
         return asistenciaRepository.findByConvocatoriaId(id).stream()

@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -120,6 +122,43 @@ public class EquipoController {
                             .orElse(ResponseEntity.badRequest().body(Map.of("error", "Usuario no encontrado")));
                 })
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
+    }
+
+    @GetMapping("/{id}/estadisticas")
+    public ResponseEntity<?> estadisticas(@PathVariable Long id) {
+        return equipoRepository.findById(id)
+                .map(equipo -> {
+                    var convocatorias = convocatoriaRepository.findByEquipoIdOrderByFechaDesc(equipo.getId());
+                    int totalConv = convocatorias.size();
+                    List<Map<String, Object>> jugadores = new ArrayList<>();
+                    for (var jugador : equipo.getJugadores()) {
+                        long confirmados = 0;
+                        long rechazados = 0;
+                        long pendientes = 0;
+                        for (var conv : convocatorias) {
+                            var asistencias = asistenciaRepository.findByConvocatoriaId(conv.getId());
+                            for (var a : asistencias) {
+                                if (a.getUsuario().getId().equals(jugador.getId())) {
+                                    switch (a.getEstado()) {
+                                        case CONFIRMADO -> confirmados++;
+                                        case RECHAZADO -> rechazados++;
+                                        default -> pendientes++;
+                                    }
+                                }
+                            }
+                        }
+                        Map<String, Object> stats = new HashMap<>();
+                        stats.put("id", jugador.getId());
+                        stats.put("nombre", jugador.getNombre());
+                        stats.put("confirmados", confirmados);
+                        stats.put("rechazados", rechazados);
+                        stats.put("pendientes", pendientes);
+                        stats.put("porcentaje", totalConv > 0 ? Math.round(confirmados * 100.0 / totalConv) : 0);
+                        jugadores.add(stats);
+                    }
+                    return ResponseEntity.ok(Map.of("totalConvocatorias", totalConv, "jugadores", jugadores));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}/jugadores/{jugadorId}")

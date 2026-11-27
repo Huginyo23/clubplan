@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, eliminarConvocatoria, getUser } from '../api'
+import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, eliminarConvocatoria, getEstadisticas, getUser } from '../api'
 
 const DEPORTES = {
   futbol: { nombre: 'Fútbol', emoji: '⚽' },
@@ -26,10 +26,13 @@ function Equipo() {
   const [editando, setEditando] = useState(false)
   const [editNombre, setEditNombre] = useState('')
   const [editDeporte, setEditDeporte] = useState('')
+  const [stats, setStats] = useState(null)
+  const [verStats, setVerStats] = useState(false)
 
   useEffect(() => {
     getEquipo(id).then(setEquipo)
     getConvocatorias(id).then(setConvocatorias)
+    getEstadisticas(id).then(setStats)
   }, [id])
 
   const esEntrenador = equipo?.entrenador?.id === user?.id
@@ -164,6 +167,44 @@ function Equipo() {
             />
             <button type="submit" className="btn btn-outline">Añadir</button>
           </form>
+        </div>
+      )}
+
+      {esEntrenador && stats && stats.jugadores?.length > 0 && (
+        <div className="card" style={{ marginBottom: '24px' }}>
+          <div className="flex-between" style={{ marginBottom: '0' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '700' }}>Estadísticas de asistencia</h3>
+            <button className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => setVerStats(!verStats)}>
+              {verStats ? 'Ocultar' : 'Ver'}
+            </button>
+          </div>
+          {verStats && (
+            <div style={{ marginTop: '16px' }}>
+              <p style={{ color: 'var(--texto-suave)', fontSize: '0.85rem', marginBottom: '12px' }}>{stats.totalConvocatorias} convocatorias en total</p>
+              {stats.jugadores.map(j => (
+                <div key={j.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid var(--borde)' }}>
+                  <div style={{ width: '120px', fontWeight: '600', fontSize: '0.9rem' }}>{j.nombre}</div>
+                  <div style={{ flex: 1, background: 'var(--fondo)', borderRadius: '8px', height: '24px', overflow: 'hidden', display: 'flex' }}>
+                    {j.confirmados > 0 && (
+                      <div style={{ width: (j.confirmados * 100 / stats.totalConvocatorias) + '%', background: 'var(--accent)', height: '100%' }} />
+                    )}
+                    {j.rechazados > 0 && (
+                      <div style={{ width: (j.rechazados * 100 / stats.totalConvocatorias) + '%', background: 'var(--rojo)', height: '100%' }} />
+                    )}
+                    {j.pendientes > 0 && (
+                      <div style={{ width: (j.pendientes * 100 / stats.totalConvocatorias) + '%', background: 'var(--amarillo)', height: '100%' }} />
+                    )}
+                  </div>
+                  <div style={{ minWidth: '45px', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem', color: 'var(--accent)' }}>{j.porcentaje}%</div>
+                </div>
+              ))}
+              <div style={{ display: 'flex', gap: '16px', marginTop: '10px', fontSize: '0.75rem' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--accent)' }}></span> Confirmado</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--rojo)' }}></span> No va</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--amarillo)' }}></span> Pendiente</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

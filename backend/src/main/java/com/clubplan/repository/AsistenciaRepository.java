@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
     List<Asistencia> findByConvocatoriaId(Long convocatoriaId);
     Optional<Asistencia> findByConvocatoriaIdAndUsuarioId(Long convocatoriaId, Long usuarioId);
+    List<Asistencia> findByUsuarioId(Long usuarioId);
 }

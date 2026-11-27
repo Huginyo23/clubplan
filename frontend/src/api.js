@@ -91,6 +91,14 @@ export function eliminarConvocatoria(id) {
   return request('/convocatorias/' + id, { method: 'DELETE' })
 }
 
+export function getEstadisticas(equipoId) {
+  return request('/equipos/' + equipoId + '/estadisticas')
+}
+
+export function getPendientes() {
+  return request('/convocatorias/pendientes')
+}
+
 export function getPerfil() {
   return request('/auth/perfil')
 }
