@@ -23,6 +23,8 @@ public class Equipo {
     @Column(nullable = false)
     private String nombre;
 
+    private String deporte;
+
     @ManyToOne
     @JoinColumn(name = "entrenador_id", nullable = false)
     private Usuario entrenador;

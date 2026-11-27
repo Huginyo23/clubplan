@@ -47,8 +47,12 @@ export function getEquipos() {
   return request('/equipos')
 }
 
-export function crearEquipo(nombre) {
-  return request('/equipos', { method: 'POST', body: JSON.stringify({ nombre }) })
+export function crearEquipo(nombre, deporte) {
+  return request('/equipos', { method: 'POST', body: JSON.stringify({ nombre, deporte }) })
+}
+
+export function eliminarEquipo(id) {
+  return request('/equipos/' + id, { method: 'DELETE' })
 }
 
 export function getEquipo(id) {

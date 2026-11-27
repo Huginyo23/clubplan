@@ -41,20 +41,36 @@ public class EquipoController {
 
         Equipo equipo = new Equipo();
         equipo.setNombre(body.get("nombre"));
+        equipo.setDeporte(body.getOrDefault("deporte", "futbol"));
         equipo.setEntrenador(usuario);
         equipoRepository.save(equipo);
         return ResponseEntity.ok(equipo);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id,
+                                      @AuthenticationPrincipal Usuario usuario) {
+        return equipoRepository.findById(id)
+                .filter(e -> e.getEntrenador().getId().equals(usuario.getId()))
+                .map(equipo -> {
+                    equipoRepository.delete(equipo);
+                    return ResponseEntity.ok(Map.of("mensaje", "Equipo eliminado"));
+                })
+                .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> detalle(@PathVariable Long id) {
         return equipoRepository.findById(id)
-                .map(equipo -> ResponseEntity.ok(Map.of(
-                        "id", equipo.getId(),
-                        "nombre", equipo.getNombre(),
-                        "entrenador", Map.of("id", equipo.getEntrenador().getId(), "nombre", equipo.getEntrenador().getNombre()),
-                        "jugadores", equipo.getJugadores().stream().map(j -> Map.of("id", j.getId(), "nombre", j.getNombre(), "email", j.getEmail())).toList()
-                )))
+                .map(equipo -> {
+                    var data = new java.util.HashMap<String, Object>();
+                    data.put("id", equipo.getId());
+                    data.put("nombre", equipo.getNombre());
+                    data.put("deporte", equipo.getDeporte());
+                    data.put("entrenador", Map.of("id", equipo.getEntrenador().getId(), "nombre", equipo.getEntrenador().getNombre()));
+                    data.put("jugadores", equipo.getJugadores().stream().map(j -> Map.of("id", j.getId(), "nombre", j.getNombre(), "email", j.getEmail())).toList());
+                    return ResponseEntity.ok(data);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 

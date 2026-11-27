@@ -1,10 +1,23 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getEquipos, crearEquipo, getUser } from '../api'
+import { getEquipos, crearEquipo, eliminarEquipo, getUser } from '../api'
+
+const DEPORTES = {
+  futbol: { nombre: 'Fútbol', emoji: '⚽' },
+  baloncesto: { nombre: 'Baloncesto', emoji: '🏀' },
+  tenis: { nombre: 'Tenis', emoji: '🎾' },
+  voleibol: { nombre: 'Voleibol', emoji: '🏐' },
+  beisbol: { nombre: 'Béisbol', emoji: '⚾' },
+  rugby: { nombre: 'Rugby', emoji: '🏈' },
+  balonmano: { nombre: 'Balonmano', emoji: '🤾' },
+  hockey: { nombre: 'Hockey', emoji: '🏒' },
+  otro: { nombre: 'Otro', emoji: '🏆' },
+}
 
 function Dashboard() {
   const [equipos, setEquipos] = useState([])
   const [nombre, setNombre] = useState('')
+  const [deporte, setDeporte] = useState('futbol')
   const [creando, setCreando] = useState(false)
   const navigate = useNavigate()
   const user = getUser()
@@ -15,9 +28,17 @@ function Dashboard() {
 
   async function handleCrear(e) {
     e.preventDefault()
-    await crearEquipo(nombre)
+    await crearEquipo(nombre, deporte)
     setNombre('')
+    setDeporte('futbol')
     setCreando(false)
+    getEquipos().then(setEquipos)
+  }
+
+  async function handleEliminar(e, id) {
+    e.stopPropagation()
+    if (!confirm('¿Estás seguro de que quieres eliminar este equipo?')) return
+    await eliminarEquipo(id)
     getEquipos().then(setEquipos)
   }
 
@@ -66,27 +87,52 @@ function Dashboard() {
       </div>
 
       {creando && (
-        <form onSubmit={handleCrear} className="card" style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', marginTop: '16px' }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.85rem' }}>Nombre del equipo</label>
-            <input
-              placeholder="Ej: Juvenil A"
-              value={nombre}
-              onChange={e => setNombre(e.target.value)}
-              required
-              style={{ width: '100%', padding: '12px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.95rem', fontFamily: 'inherit' }}
-            />
+        <form onSubmit={handleCrear} className="card" style={{ marginTop: '16px' }}>
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.85rem' }}>Nombre del equipo</label>
+              <input
+                placeholder="Ej: Juvenil A"
+                value={nombre}
+                onChange={e => setNombre(e.target.value)}
+                required
+                style={{ width: '100%', padding: '12px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.95rem', fontFamily: 'inherit' }}
+              />
+            </div>
+            <div style={{ width: '180px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.85rem' }}>Deporte</label>
+              <select
+                value={deporte}
+                onChange={e => setDeporte(e.target.value)}
+                style={{ width: '100%', padding: '12px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.95rem', fontFamily: 'inherit' }}
+              >
+                {Object.entries(DEPORTES).map(([key, d]) => (
+                  <option key={key} value={key}>{d.emoji} {d.nombre}</option>
+                ))}
+              </select>
+            </div>
           </div>
-          <button type="submit" className="btn btn-primary" style={{ height: '46px' }}>Crear</button>
+          <button type="submit" className="btn btn-primary">Crear equipo</button>
         </form>
       )}
 
       <div className="grid" style={{ marginTop: '16px' }}>
         {equipos.map(equipo => (
-          <div key={equipo.id} className="card card-clickable" onClick={() => navigate('/equipo/' + equipo.id)}>
-            <div className="card-icon card-icon-purple">&#9917;</div>
+          <div key={equipo.id} className="card card-clickable" onClick={() => navigate('/equipo/' + equipo.id)} style={{ position: 'relative' }}>
+            <div className="card-icon card-icon-purple" style={{ fontSize: '1.5rem' }}>
+              {DEPORTES[equipo.deporte]?.emoji || DEPORTES.futbol.emoji}
+            </div>
             <h3>{equipo.nombre}</h3>
-            <p>Entrenador: {equipo.entrenador?.nombre || 'Tú'}</p>
+            <p>{DEPORTES[equipo.deporte]?.nombre || 'Fútbol'} &middot; {equipo.entrenador?.nombre || 'Tú'}</p>
+            {user?.rol === 'ENTRENADOR' && equipo.entrenador?.id === user?.id && (
+              <button
+                className="btn btn-danger"
+                style={{ position: 'absolute', top: '12px', right: '12px', padding: '6px 12px', fontSize: '0.75rem' }}
+                onClick={e => handleEliminar(e, equipo.id)}
+              >
+                Eliminar
+              </button>
+            )}
           </div>
         ))}
       </div>
