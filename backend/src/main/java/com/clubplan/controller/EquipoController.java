@@ -107,6 +107,7 @@ public class EquipoController {
                     data.put("deporte", equipo.getDeporte());
                     data.put("entrenador", Map.of("id", equipo.getEntrenador().getId(), "nombre", equipo.getEntrenador().getNombre()));
                     data.put("jugadores", equipo.getJugadores().stream().map(j -> Map.of("id", j.getId(), "nombre", j.getNombre(), "email", j.getEmail())).toList());
+                    data.put("capitanId", equipo.getCapitanId());
                     return ResponseEntity.ok(data);
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -177,6 +178,20 @@ public class EquipoController {
                     equipo.getJugadores().removeIf(j -> j.getId().equals(jugadorId));
                     equipoRepository.save(equipo);
                     return ResponseEntity.ok(Map.of("mensaje", "Jugador eliminado del equipo"));
+                })
+                .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
+    }
+
+    @PutMapping("/{id}/capitan")
+    public ResponseEntity<?> setCapitan(@PathVariable Long id,
+                                         @AuthenticationPrincipal Usuario usuario,
+                                         @RequestBody Map<String, Long> body) {
+        return equipoRepository.findById(id)
+                .filter(e -> e.getEntrenador().getId().equals(usuario.getId()))
+                .map(equipo -> {
+                    equipo.setCapitanId(body.get("capitanId"));
+                    equipoRepository.save(equipo);
+                    return ResponseEntity.ok(Map.of("mensaje", "Capitán asignado"));
                 })
                 .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
     }

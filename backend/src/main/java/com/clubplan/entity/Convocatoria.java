@@ -31,4 +31,6 @@ public class Convocatoria {
     @ManyToOne
     @JoinColumn(name = "creador_id", nullable = false)
     private Usuario creador;
+
+    private String resultado;
 }

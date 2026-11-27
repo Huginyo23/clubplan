@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, eliminarConvocatoria, getEstadisticas, getMensajes, enviarMensaje, getUser } from '../api'
+import { getEquipo, addJugador, removeJugador, editarEquipo, getConvocatorias, crearConvocatoria, eliminarConvocatoria, getEstadisticas, getMensajes, enviarMensaje, setCapitan, setResultado, getUser } from '../api'
 
 const DEPORTES = {
   futbol: { nombre: 'Fútbol', emoji: '⚽' },
@@ -38,6 +38,20 @@ function Equipo() {
     getEstadisticas(id).then(setStats)
     getMensajes(id).then(setMensajes)
   }, [id])
+
+  async function handleCapitan(jugadorId) {
+    const nuevoId = equipo.capitanId === jugadorId ? null : jugadorId
+    await setCapitan(id, nuevoId)
+    getEquipo(id).then(setEquipo)
+  }
+
+  async function handleResultado(e, convId) {
+    e.stopPropagation()
+    const res = prompt('Introduce el resultado (ej: 3-1)')
+    if (res === null) return
+    await setResultado(convId, res)
+    getConvocatorias(id).then(setConvocatorias)
+  }
 
   async function handleEnviarMsg(e) {
     e.preventDefault()
@@ -156,13 +170,22 @@ function Equipo() {
               <div className="jugador-info">
                 <div className="jugador-avatar">{j.nombre.charAt(0).toUpperCase()}</div>
                 <div>
-                  <div style={{ fontWeight: '600', fontSize: '0.95rem' }}>{j.nombre}</div>
+                  <div style={{ fontWeight: '600', fontSize: '0.95rem' }}>
+                    {equipo.capitanId === j.id && <span title="Capitán" style={{ marginRight: '4px' }}>&#169;&#65039;</span>}
+                    {j.nombre}
+                    {equipo.capitanId === j.id && <span style={{ fontSize: '0.7rem', color: 'var(--amarillo)', fontWeight: '700', marginLeft: '6px' }}>CAPITÁN</span>}
+                  </div>
                   <div style={{ color: 'var(--texto-suave)', fontSize: '0.8rem' }}>{j.email}</div>
                 </div>
               </div>
-              <button onClick={() => handleRemoveJugador(j.id)} className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>
-                Quitar
-              </button>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button onClick={() => handleCapitan(j.id)} className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '0.7rem' }}>
+                  {equipo.capitanId === j.id ? 'Quitar C' : 'Capitán'}
+                </button>
+                <button onClick={() => handleRemoveJugador(j.id)} className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>
+                  Quitar
+                </button>
+              </div>
             </div>
           ))}
           {(!equipo.jugadores || equipo.jugadores.length === 0) && (
@@ -264,7 +287,18 @@ function Equipo() {
               </div>
               <div style={{ flex: 1 }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: '700' }}>{c.titulo}</h3>
-                {c.lugar && <p style={{ color: 'var(--texto-suave)', fontSize: '0.85rem', marginTop: '2px' }}>{c.lugar}</p>}
+                {c.lugar && (
+                  <p style={{ color: 'var(--texto-suave)', fontSize: '0.85rem', marginTop: '2px' }}>
+                    <a href={'https://www.google.com/maps/search/' + encodeURIComponent(c.lugar)} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: 'var(--primary)', textDecoration: 'none' }}>
+                      &#128205; {c.lugar}
+                    </a>
+                  </p>
+                )}
+                {c.resultado && (
+                  <span style={{ display: 'inline-block', marginTop: '4px', padding: '2px 10px', background: 'var(--primary)', color: 'white', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '700' }}>
+                    {c.resultado}
+                  </span>
+                )}
                 {c.total > 0 && (
                   <div style={{ display: 'flex', gap: '10px', marginTop: '6px', fontSize: '0.75rem' }}>
                     <span style={{ color: 'var(--accent)', fontWeight: '600' }}>{c.confirmados} confirmados</span>
@@ -276,10 +310,16 @@ function Equipo() {
               <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>&#8250;</span>
             </div>
             {esEntrenador && (
-              <button className="btn btn-danger" style={{ position: 'absolute', top: '10px', right: '10px', padding: '4px 10px', fontSize: '0.7rem' }}
-                onClick={e => handleEliminarConv(e, c.id)}>
-                Eliminar
-              </button>
+              <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', gap: '4px' }}>
+                <button className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '0.7rem' }}
+                  onClick={e => handleResultado(e, c.id)}>
+                  {c.resultado ? 'Editar resultado' : 'Resultado'}
+                </button>
+                <button className="btn btn-danger" style={{ padding: '4px 10px', fontSize: '0.7rem' }}
+                  onClick={e => handleEliminarConv(e, c.id)}>
+                  Eliminar
+                </button>
+              </div>
             )}
           </div>
         )

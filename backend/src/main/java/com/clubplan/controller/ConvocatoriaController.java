@@ -49,6 +49,7 @@ public class ConvocatoriaController {
                     data.put("rechazados", rechazados);
                     data.put("pendientes", pendientes);
                     data.put("total", asistencias.size());
+                    data.put("resultado", c.getResultado());
                     return (Map<String, Object>) data;
                 })
                 .toList();
@@ -124,6 +125,20 @@ public class ConvocatoriaController {
         return ResponseEntity.ok(Map.of("pendientes", count));
     }
 
+    @PutMapping("/convocatorias/{id}/resultado")
+    public ResponseEntity<?> setResultado(@PathVariable Long id,
+                                           @AuthenticationPrincipal Usuario usuario,
+                                           @RequestBody Map<String, String> body) {
+        return convocatoriaRepository.findById(id)
+                .filter(c -> c.getCreador().getId().equals(usuario.getId()))
+                .map(conv -> {
+                    conv.setResultado(body.get("resultado"));
+                    convocatoriaRepository.save(conv);
+                    return ResponseEntity.ok(Map.of("mensaje", "Resultado guardado"));
+                })
+                .orElse(ResponseEntity.status(403).body(Map.of("error", "No tienes permiso")));
+    }
+
     @GetMapping("/convocatorias/{id}/info")
     public ResponseEntity<?> info(@PathVariable Long id) {
         return convocatoriaRepository.findById(id)
@@ -135,6 +150,7 @@ public class ConvocatoriaController {
                     data.put("fecha", c.getFecha().toString());
                     data.put("lugar", c.getLugar());
                     data.put("equipoNombre", c.getEquipo().getNombre());
+                    data.put("resultado", c.getResultado());
                     return ResponseEntity.ok((Object) data);
                 })
                 .orElse(ResponseEntity.notFound().build());

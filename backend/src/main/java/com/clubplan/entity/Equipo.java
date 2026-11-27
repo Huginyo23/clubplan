@@ -37,4 +37,6 @@ public class Equipo {
     )
     @JsonIgnore
     private Set<Usuario> jugadores = new HashSet<>();
+
+    private Long capitanId;
 }

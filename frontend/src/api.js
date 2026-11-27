@@ -107,6 +107,14 @@ export function enviarMensaje(equipoId, texto) {
   return request('/equipos/' + equipoId + '/mensajes', { method: 'POST', body: JSON.stringify({ texto }) })
 }
 
+export function setCapitan(equipoId, capitanId) {
+  return request('/equipos/' + equipoId + '/capitan', { method: 'PUT', body: JSON.stringify({ capitanId }) })
+}
+
+export function setResultado(convId, resultado) {
+  return request('/convocatorias/' + convId + '/resultado', { method: 'PUT', body: JSON.stringify({ resultado }) })
+}
+
 export function getConvocatoriaInfo(id) {
   return request('/convocatorias/' + id + '/info')
 }
