@@ -58,32 +58,29 @@ function Perfil() {
         <h2>Mi perfil</h2>
       </div>
 
-      <div className="card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid var(--borde)' }}>
-          <div style={{ position: 'relative' }}>
-            {foto ? (
-              <img src={foto} alt="Foto" style={{ width: '70px', height: '70px', borderRadius: '50%', objectFit: 'cover' }} />
-            ) : (
-              <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: '700' }}>
-                {nombre.charAt(0).toUpperCase()}
-              </div>
-            )}
-            <label style={{ position: 'absolute', bottom: '-4px', right: '-4px', width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.8rem', border: '2px solid white' }}>
-              &#9998;
-              <input type="file" accept="image/*" onChange={handleFoto} style={{ display: 'none' }} />
-            </label>
-          </div>
-          <div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: '700' }}>{nombre}</h3>
-            <p style={{ color: 'var(--texto-suave)', fontSize: '0.9rem' }}>{email}</p>
-            <span className={'badge badge-' + (rol === 'ENTRENADOR' ? 'confirmado' : 'pendiente')} style={{ marginTop: '4px' }}>
-              {rol === 'ENTRENADOR' ? 'Entrenador' : 'Jugador'}
-            </span>
-          </div>
+      <div style={{ marginBottom: '24px', padding: '32px', borderRadius: '20px', background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))', color: 'white', boxShadow: '0 8px 32px rgba(108,92,231,0.25)', textAlign: 'center' }}>
+        <div style={{ position: 'relative', display: 'inline-block', marginBottom: '12px' }}>
+          {foto ? (
+            <img src={foto} alt="Foto" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,255,255,0.3)' }} />
+          ) : (
+            <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: '700', border: '3px solid rgba(255,255,255,0.3)' }}>
+              {nombre.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <label style={{ position: 'absolute', bottom: '0', right: '0', width: '28px', height: '28px', borderRadius: '50%', background: 'white', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.8rem', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+            &#9998;
+            <input type="file" accept="image/*" onChange={handleFoto} style={{ display: 'none' }} />
+          </label>
         </div>
+        <h3 style={{ fontSize: '1.3rem', fontWeight: '700' }}>{nombre}</h3>
+        <p style={{ opacity: 0.8, fontSize: '0.9rem' }}>{email}</p>
+        <span style={{ display: 'inline-block', marginTop: '8px', padding: '4px 14px', borderRadius: '20px', background: 'rgba(255,255,255,0.2)', fontSize: '0.72rem', fontWeight: '700', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+          {rol === 'ENTRENADOR' ? 'Entrenador' : 'Jugador'}
+        </span>
+      </div>
 
+      <div className="card">
         {mensaje && <p style={{ color: 'var(--accent)', fontWeight: '600', marginBottom: '16px' }}>{mensaje}</p>}
-
         <form onSubmit={handleGuardar}>
           <div className="form-group">
             <label>Nombre</label>

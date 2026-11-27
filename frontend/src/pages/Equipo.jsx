@@ -121,43 +121,44 @@ function Equipo() {
         &larr; Volver
       </button>
 
-      <div className="card" style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ fontSize: '2.5rem' }}>{dep.emoji}</div>
+      <div style={{ marginBottom: '24px', padding: '28px', borderRadius: '20px', background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))', color: 'white', boxShadow: '0 8px 32px rgba(108,92,231,0.25)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-20px', right: '-10px', fontSize: '6rem', opacity: 0.15, pointerEvents: 'none' }}>{dep.emoji}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
+          <div style={{ fontSize: '2.8rem', background: 'rgba(255,255,255,0.15)', width: '64px', height: '64px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{dep.emoji}</div>
           <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>{equipo.nombre}</h2>
-            <p style={{ color: 'var(--texto-suave)', fontSize: '0.9rem' }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: '800' }}>{equipo.nombre}</h2>
+            <p style={{ opacity: 0.8, fontSize: '0.9rem' }}>
               {dep.nombre} &middot; Entrenador: {equipo.entrenador.nombre} &middot; {equipo.jugadores?.length || 0} jugadores
             </p>
           </div>
           {esEntrenador && (
-            <button onClick={abrirEditar} className="btn btn-outline" style={{ padding: '8px 14px', fontSize: '0.8rem' }}>
+            <button onClick={abrirEditar} style={{ padding: '8px 14px', fontSize: '0.8rem', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', color: 'white', borderRadius: '10px', cursor: 'pointer', fontWeight: '600', fontFamily: 'inherit' }}>
               Editar
             </button>
           )}
         </div>
 
         {editando && (
-          <form onSubmit={handleEditar} style={{ marginTop: '16px', borderTop: '1px solid var(--borde)', paddingTop: '16px' }}>
+          <form onSubmit={handleEditar} style={{ marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '16px', position: 'relative' }}>
             <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
               <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.85rem' }}>Nombre</label>
                 <input value={editNombre} onChange={e => setEditNombre(e.target.value)} required
-                  style={{ width: '100%', padding: '10px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.9rem', fontFamily: 'inherit' }} />
+                  style={{ width: '100%', padding: '10px 14px', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '10px', fontSize: '0.9rem', fontFamily: 'inherit', background: 'rgba(255,255,255,0.1)', color: 'white' }} />
               </div>
               <div style={{ width: '180px' }}>
                 <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '0.85rem' }}>Deporte</label>
                 <select value={editDeporte} onChange={e => setEditDeporte(e.target.value)}
-                  style={{ width: '100%', padding: '10px 14px', border: '2px solid var(--borde)', borderRadius: '10px', fontSize: '0.9rem', fontFamily: 'inherit' }}>
+                  style={{ width: '100%', padding: '10px 14px', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '10px', fontSize: '0.9rem', fontFamily: 'inherit', background: 'rgba(255,255,255,0.1)', color: 'white' }}>
                   {Object.entries(DEPORTES).map(([key, d]) => (
-                    <option key={key} value={key}>{d.emoji} {d.nombre}</option>
+                    <option key={key} value={key} style={{ color: '#1A1A2E' }}>{d.emoji} {d.nombre}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button type="submit" className="btn btn-primary" style={{ padding: '8px 20px', fontSize: '0.85rem' }}>Guardar</button>
-              <button type="button" className="btn btn-outline" onClick={() => setEditando(false)} style={{ padding: '8px 20px', fontSize: '0.85rem' }}>Cancelar</button>
+              <button type="submit" style={{ padding: '8px 20px', fontSize: '0.85rem', background: 'white', color: 'var(--primary)', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '700', fontFamily: 'inherit' }}>Guardar</button>
+              <button type="button" onClick={() => setEditando(false)} style={{ padding: '8px 20px', fontSize: '0.85rem', background: 'rgba(255,255,255,0.15)', color: 'white', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '10px', cursor: 'pointer', fontWeight: '600', fontFamily: 'inherit' }}>Cancelar</button>
             </div>
           </form>
         )}

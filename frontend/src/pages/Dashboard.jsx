@@ -47,11 +47,14 @@ function Dashboard() {
 
   return (
     <div className="container">
-      <div style={{ marginBottom: '28px' }}>
-        <p style={{ color: 'var(--texto-suave)', fontSize: '0.88rem', marginBottom: '2px' }}>{saludo}</p>
-        <h2 style={{ fontSize: '1.7rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
+      <div style={{ marginBottom: '28px', padding: '28px', borderRadius: '20px', background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))', color: 'white', boxShadow: '0 8px 32px rgba(108,92,231,0.25)' }}>
+        <p style={{ opacity: 0.8, fontSize: '0.9rem', marginBottom: '4px' }}>{saludo}</p>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
           {user?.nombre || 'Usuario'}
         </h2>
+        <p style={{ opacity: 0.7, fontSize: '0.85rem', marginTop: '4px' }}>
+          {equipos.length} {equipos.length === 1 ? 'equipo' : 'equipos'} &middot; {equipos.reduce((acc, e) => acc + (e.jugadores?.length || 0), 0)} jugadores
+        </p>
       </div>
 
       <div className="stat-cards" style={{ marginBottom: '24px' }}>
