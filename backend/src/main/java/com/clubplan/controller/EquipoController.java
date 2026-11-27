@@ -2,6 +2,8 @@ package com.clubplan.controller;
 
 import com.clubplan.entity.Equipo;
 import com.clubplan.entity.Usuario;
+import com.clubplan.repository.AsistenciaRepository;
+import com.clubplan.repository.ConvocatoriaRepository;
 import com.clubplan.repository.EquipoRepository;
 import com.clubplan.repository.UsuarioRepository;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +20,17 @@ public class EquipoController {
 
     private final EquipoRepository equipoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ConvocatoriaRepository convocatoriaRepository;
+    private final AsistenciaRepository asistenciaRepository;
 
     public EquipoController(EquipoRepository equipoRepository,
-                            UsuarioRepository usuarioRepository) {
+                            UsuarioRepository usuarioRepository,
+                            ConvocatoriaRepository convocatoriaRepository,
+                            AsistenciaRepository asistenciaRepository) {
         this.equipoRepository = equipoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.convocatoriaRepository = convocatoriaRepository;
+        this.asistenciaRepository = asistenciaRepository;
     }
 
     @GetMapping
@@ -53,6 +61,13 @@ public class EquipoController {
         return equipoRepository.findById(id)
                 .filter(e -> e.getEntrenador().getId().equals(usuario.getId()))
                 .map(equipo -> {
+                    var convocatorias = convocatoriaRepository.findByEquipoIdOrderByFechaDesc(equipo.getId());
+                    for (var conv : convocatorias) {
+                        asistenciaRepository.deleteAll(asistenciaRepository.findByConvocatoriaId(conv.getId()));
+                    }
+                    convocatoriaRepository.deleteAll(convocatorias);
+                    equipo.getJugadores().clear();
+                    equipoRepository.save(equipo);
                     equipoRepository.delete(equipo);
                     return ResponseEntity.ok(Map.of("mensaje", "Equipo eliminado"));
                 })
