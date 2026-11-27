@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from 'react'
+import { useState, useLayoutEffect, useRef, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login, setToken, setUser } from '../api'
 
@@ -19,7 +19,16 @@ function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPass, setShowPass] = useState(false)
+  const [remember, setRemember] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const saved = localStorage.getItem('clubplan_email')
+    if (saved) {
+      setEmail(saved)
+      setRemember(true)
+    }
+  }, [])
   const containerRef = useRef(null)
   const cardRef = useRef(null)
   const iconRefs = useRef([])
@@ -129,6 +138,8 @@ function Login() {
     if (data.error) {
       setError('El email o la contraseña no son correctos')
     } else {
+      if (remember) localStorage.setItem('clubplan_email', email)
+      else localStorage.removeItem('clubplan_email')
       setToken(data.token)
       setUser(data.usuario)
       navigate('/')
@@ -144,7 +155,7 @@ function Login() {
       ))}
 
       <div className="login-card" ref={cardRef}>
-        <div className="login-logo">ClubPlan</div>
+        <div className="login-logo" title="Gestión deportiva">ClubPlan</div>
         <h2>Iniciar sesión</h2>
         <p className="login-subtitle">Gestiona tus equipos y convocatorias</p>
         {error && <p className="error">{error}</p>}
@@ -162,11 +173,16 @@ function Login() {
               </button>
             </div>
           </div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--texto-suave)', cursor: 'pointer', marginBottom: '18px' }}>
+            <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} style={{ accentColor: 'var(--primary)' }} />
+            Recuérdame
+          </label>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px' }} disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
+            {loading ? 'Entrando...' : <>Entrar <span style={{ marginLeft: '6px' }}>&rarr;</span></>}
           </button>
         </form>
-        <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--texto-suave)' }}>
+        <div style={{ borderTop: '1px solid var(--borde)', margin: '20px 0', }} />
+        <p style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--texto-suave)' }}>
           ¿No tienes cuenta? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>Regístrate</Link>
         </p>
       </div>
