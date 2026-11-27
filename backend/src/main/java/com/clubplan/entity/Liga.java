@@ -20,6 +20,8 @@ public class Liga {
 
     private String grupo;
 
+    private Long isquadTorneoId;
+
     @ManyToOne
     @JoinColumn(name = "equipo_id", nullable = false)
     private Equipo equipo;

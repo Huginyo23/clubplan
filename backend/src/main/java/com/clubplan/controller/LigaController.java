@@ -8,6 +8,7 @@ import com.clubplan.repository.ClasificacionEquipoRepository;
 import com.clubplan.repository.EquipoRepository;
 import com.clubplan.repository.LigaRepository;
 import com.clubplan.repository.PartidoRepository;
+import com.clubplan.service.IsquadService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,20 +26,38 @@ public class LigaController {
     private final PartidoRepository partidoRepository;
     private final EquipoRepository equipoRepository;
     private final ClasificacionEquipoRepository clasificacionRepository;
+    private final IsquadService isquadService;
 
     public LigaController(LigaRepository ligaRepository,
                            PartidoRepository partidoRepository,
                            EquipoRepository equipoRepository,
-                           ClasificacionEquipoRepository clasificacionRepository) {
+                           ClasificacionEquipoRepository clasificacionRepository,
+                           IsquadService isquadService) {
         this.ligaRepository = ligaRepository;
         this.partidoRepository = partidoRepository;
         this.equipoRepository = equipoRepository;
         this.clasificacionRepository = clasificacionRepository;
+        this.isquadService = isquadService;
     }
 
     @GetMapping("/equipo/{equipoId}")
     public List<Liga> ligasDeEquipo(@PathVariable Long equipoId) {
         return ligaRepository.findByEquipoId(equipoId);
+    }
+
+    @PostMapping("/{ligaId}/sync")
+    public ResponseEntity<?> sincronizar(@PathVariable Long ligaId,
+                                          @AuthenticationPrincipal Usuario usuario) {
+        return ligaRepository.findById(ligaId)
+                .filter(l -> l.getEquipo().getEntrenador().getId().equals(usuario.getId()))
+                .map(liga -> {
+                    if (liga.getIsquadTorneoId() == null) {
+                        return ResponseEntity.badRequest().body(Map.of("error", "Liga sin enlace a iSquad"));
+                    }
+                    isquadService.sincronizar(liga);
+                    return ResponseEntity.ok(Map.of("mensaje", "Clasificación sincronizada"));
+                })
+                .orElse(ResponseEntity.status(403).build());
     }
 
     @PostMapping
@@ -53,7 +72,13 @@ public class LigaController {
                     liga.setTemporada(body.get("temporada"));
                     liga.setGrupo(body.get("grupo"));
                     liga.setEquipo(equipo);
+                    if (body.get("isquadTorneoId") != null && !body.get("isquadTorneoId").isEmpty()) {
+                        liga.setIsquadTorneoId(Long.parseLong(body.get("isquadTorneoId")));
+                    }
                     ligaRepository.save(liga);
+                    if (liga.getIsquadTorneoId() != null) {
+                        isquadService.sincronizar(liga);
+                    }
                     return ResponseEntity.ok(liga);
                 })
                 .orElse(ResponseEntity.status(403).build());
@@ -147,8 +172,9 @@ public class LigaController {
     }
 
     @GetMapping("/{ligaId}/clasificacion")
-    public List<Map<String, Object>> clasificacion(@PathVariable Long ligaId) {
-        return clasificacionRepository.findByLigaIdOrderByPosicionAsc(ligaId).stream()
+    public Map<String, Object> clasificacion(@PathVariable Long ligaId) {
+        Liga liga = ligaRepository.findById(ligaId).orElse(null);
+        List<Map<String, Object>> filas = clasificacionRepository.findByLigaIdOrderByPosicionAsc(ligaId).stream()
                 .map(c -> {
                     Map<String, Object> data = new HashMap<>();
                     data.put("id", c.getId());
@@ -165,6 +191,10 @@ public class LigaController {
                     return data;
                 })
                 .toList();
+        Map<String, Object> result = new HashMap<>();
+        result.put("filas", filas);
+        result.put("isquadTorneoId", liga != null ? liga.getIsquadTorneoId() : null);
+        return result;
     }
 
     @PostMapping("/{ligaId}/clasificacion")

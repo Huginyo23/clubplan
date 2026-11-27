@@ -138,8 +138,8 @@ export function getLigas(equipoId) {
   return request('/ligas/equipo/' + equipoId)
 }
 
-export function crearLiga(equipoId, nombre, temporada, grupo) {
-  return request('/ligas', { method: 'POST', body: JSON.stringify({ equipoId, nombre, temporada, grupo }) })
+export function crearLiga(equipoId, nombre, temporada, grupo, isquadTorneoId) {
+  return request('/ligas', { method: 'POST', body: JSON.stringify({ equipoId, nombre, temporada, grupo, isquadTorneoId: isquadTorneoId || '' }) })
 }
 
 export function eliminarLiga(id) {
@@ -180,4 +180,8 @@ export function editarClasificacion(id, data) {
 
 export function eliminarClasificacion(id) {
   return request('/ligas/clasificacion/' + id, { method: 'DELETE' })
+}
+
+export function sincronizarLiga(ligaId) {
+  return request('/ligas/' + ligaId + '/sync', { method: 'POST' })
 }

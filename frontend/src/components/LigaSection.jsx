@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getLigas, crearLiga, eliminarLiga, getPartidos, addPartido, eliminarPartido, getLigaStats, getClasificacion, addClasificacion, eliminarClasificacion } from '../api'
+import { getLigas, crearLiga, eliminarLiga, getPartidos, addPartido, eliminarPartido, getLigaStats, getClasificacion, addClasificacion, eliminarClasificacion, sincronizarLiga } from '../api'
 
 function LigaSection({ equipoId, esEntrenador }) {
   const [ligas, setLigas] = useState([])
@@ -9,7 +9,8 @@ function LigaSection({ equipoId, esEntrenador }) {
   const [clasificacion, setClasificacion] = useState([])
   const [tab, setTab] = useState('clasificacion')
   const [creandoLiga, setCreandoLiga] = useState(false)
-  const [formLiga, setFormLiga] = useState({ nombre: '', temporada: '', grupo: '' })
+  const [formLiga, setFormLiga] = useState({ nombre: '', temporada: '', grupo: '', isquadTorneoId: '' })
+  const [sincronizando, setSincronizando] = useState(false)
   const [creandoPartido, setCreandoPartido] = useState(false)
   const [formPartido, setFormPartido] = useState({ jornada: '', rival: '', golesPropio: '', golesRival: '', fecha: '', esLocal: true })
   const [creandoEquipo, setCreandoEquipo] = useState(false)
@@ -27,19 +28,19 @@ function LigaSection({ equipoId, esEntrenador }) {
     if (!ligaActiva) return
     getPartidos(ligaActiva.id).then(setPartidos)
     getLigaStats(ligaActiva.id).then(setStats)
-    getClasificacion(ligaActiva.id).then(setClasificacion)
+    getClasificacion(ligaActiva.id).then(data => setClasificacion(data.filas || []))
   }, [ligaActiva])
 
   function recargar() {
     getPartidos(ligaActiva.id).then(setPartidos)
     getLigaStats(ligaActiva.id).then(setStats)
-    getClasificacion(ligaActiva.id).then(setClasificacion)
+    getClasificacion(ligaActiva.id).then(data => setClasificacion(data.filas || []))
   }
 
   async function handleCrearLiga(e) {
     e.preventDefault()
-    await crearLiga(equipoId, formLiga.nombre, formLiga.temporada, formLiga.grupo)
-    setFormLiga({ nombre: '', temporada: '', grupo: '' })
+    await crearLiga(equipoId, formLiga.nombre, formLiga.temporada, formLiga.grupo, formLiga.isquadTorneoId)
+    setFormLiga({ nombre: '', temporada: '', grupo: '', isquadTorneoId: '' })
     setCreandoLiga(false)
     const data = await getLigas(equipoId)
     setLigas(data)
@@ -101,6 +102,13 @@ function LigaSection({ equipoId, esEntrenador }) {
     if (!confirm('¿Quitar este equipo de la clasificación?')) return
     await eliminarClasificacion(cid)
     recargar()
+  }
+
+  async function handleSincronizar() {
+    setSincronizando(true)
+    await sincronizarLiga(ligaActiva.id)
+    recargar()
+    setSincronizando(false)
   }
 
   function getResultado(p) {
@@ -173,6 +181,13 @@ function LigaSection({ equipoId, esEntrenador }) {
 
               {tab === 'clasificacion' && (
                 <>
+                  {ligaActiva.isquadTorneoId && esEntrenador && (
+                    <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                      <button onClick={handleSincronizar} disabled={sincronizando} className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem' }}>
+                        {sincronizando ? 'Sincronizando...' : 'Actualizar desde iSquad'}
+                      </button>
+                    </div>
+                  )}
                   {clasificacion.length > 0 ? (
                     <div style={{ overflowX: 'auto', marginBottom: '12px' }}>
                       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
@@ -427,10 +442,17 @@ function LigaSection({ equipoId, esEntrenador }) {
                         style={{ width: '100%', padding: '8px', border: '2px solid var(--borde)', borderRadius: '8px', fontSize: '0.85rem', fontFamily: 'inherit' }} />
                     </div>
                   </div>
-                  <div style={{ marginBottom: '10px' }}>
-                    <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '600', marginBottom: '4px' }}>Grupo</label>
-                    <input value={formLiga.grupo} onChange={e => setFormLiga({...formLiga, grupo: e.target.value})} placeholder="Ej: Sur"
-                      style={{ width: '100%', padding: '8px', border: '2px solid var(--borde)', borderRadius: '8px', fontSize: '0.85rem', fontFamily: 'inherit' }} />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '600', marginBottom: '4px' }}>Grupo</label>
+                      <input value={formLiga.grupo} onChange={e => setFormLiga({...formLiga, grupo: e.target.value})} placeholder="Ej: Sur"
+                        style={{ width: '100%', padding: '8px', border: '2px solid var(--borde)', borderRadius: '8px', fontSize: '0.85rem', fontFamily: 'inherit' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: '600', marginBottom: '4px' }}>ID Torneo iSquad</label>
+                      <input value={formLiga.isquadTorneoId} onChange={e => setFormLiga({...formLiga, isquadTorneoId: e.target.value})} placeholder="Ej: 1040217"
+                        style={{ width: '100%', padding: '8px', border: '2px solid var(--borde)', borderRadius: '8px', fontSize: '0.85rem', fontFamily: 'inherit' }} />
+                    </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button type="submit" className="btn btn-primary" style={{ padding: '8px 20px', fontSize: '0.85rem' }}>Crear liga</button>
